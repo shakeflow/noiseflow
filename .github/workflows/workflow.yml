@@ -1,0 +1,94 @@
+name: Code Coverage
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  code-coverage:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.11']
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+            cxx: g++
+            label: linux-64
+    
+    name: ${{ matrix.label }}-Python-${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Conda Environment with Miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        miniconda-version: latest
+        python-version: ${{ matrix.python-version }}
+        activate-environment: noiseflow
+
+    - name: Set Conda Cache Date
+      run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+    - name: Cache Conda Env
+      id: cached-conda-dependencies
+      uses: actions/cache@v2
+      env:
+        CACHE_NUMBER: 0 # Increase this value to reset cache if etc/example-environment.yml has not changed
+      with:
+        path: ${{ env.CONDA }}/envs
+        key: conda-${{ runner.os }}-python${{ matrix.python-version }}-${{ env.DATE }}-${{ hashFiles('**/environment.yml') }}-${{ env.CACHE_NUMBER }}
+      
+    - name: Install Conda Dependencies
+      if: steps.cached-conda-dependencies.outputs.cache-hit != 'true'
+      run: conda env update -n noiseflow -f environment.yml
+
+    - name: Setup Poetry in Conda Environment
+      uses: snok/install-poetry@v1
+      with:
+        version: latest 
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Cache Poetry Env
+      id: cached-poetry-dependencies
+      uses: actions/cache@v2
+      with:
+        path: .venv
+        key: poetry-${{ runner.os }}-python${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install Poetry Dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction
+
+    - name: Install Source-Code from Github
+      run: |
+        git clone https://github.com/xtensor-stack/xtensor-fftw extern/xtensor-fftw
+        git clone https://github.com/kfrlib/kfr extern/kfr
+
+    - name: Build NoiseFlow
+      run: CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build
+
+
+    - name: Generate coverage report
+      run: |
+        pip install pytest
+        pip install pytest-cov
+        pytest --cov=./noiseflow --cov-report=xml
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with: 
+        token: ${{ secrets.CODECOV_TOKEN_NOISEFLOW }}
+        env_vars: OS
+        fail_ci_if_error: false
+        verbose: true
