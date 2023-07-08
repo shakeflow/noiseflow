@@ -99,6 +99,6 @@ jobs:
         else
           CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build -f wheel
         fi
-        poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+        poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN_NOISEFLOW }}
         poetry publish
         
