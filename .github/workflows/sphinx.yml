@@ -11,7 +11,7 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: 3.11
       - name: run doc
         run: |
           pip install poetry-core@https://github.com/python-poetry/poetry-core/archive/refs/tags/1.6.1.zip
