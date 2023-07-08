@@ -1,6 +1,20 @@
 # NoiseFlow
 
 
+[![Actions Status](https://github.com/shakeflow/noiseflow/actions/workflows/workflow.yml/badge.svg)](https://github.com/shakeflow/noiseflow/actions)
+
+
+
+[![coverage](https://codecov.io/gh/shakeflow/noiseflow/branch/main/graph/badge.svg)](https://codecov.io/gh/shakeflow/noiseflow)
+
+[![docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://shakeflow.github.io/noiseflow/)
+
+[![supported versions](https://img.shields.io/pypi/pyversions/noiseflow.svg?label=python_versions)](https://pypi.python.org/pypi/noiseflow)
+
+
+[![docs](https://badge.fury.io/py/noiseflow.svg)](https://badge.fury.io/py/noiseflow)
+
+
 ## Prerequisites
 
 NoiseFlow now supports `Clang` and `GCC` compiler in MacOS and Linux system separately, and all installation processes are under the `conda` environment, and we recommend to use miniconda. Make sure to install the following pre-packages before installing noiseflow:

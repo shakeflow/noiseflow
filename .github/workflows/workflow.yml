@@ -1,4 +1,4 @@
-name: Code Coverage
+name: noiseflow
 on:
   push:
     branches:
