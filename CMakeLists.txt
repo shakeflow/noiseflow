@@ -9,7 +9,6 @@ set(CMAKE_PREFIX_PATH $ENV{CONDA_PREFIX}) # set conda env path, so that cmake ca
 
 
 
-
 ###################################################################  
 #   Project Info & Compiler Detection
 ###################################################################  
@@ -44,7 +43,6 @@ endif()
 
 
 
-
 ###################################################################  
 #   Find Libraries
 ###################################################################  
@@ -59,23 +57,19 @@ find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 # )
 
 
-### OpenMP, check if the BREW_OPENMP environment variable is set (clang doesn't bring openmp, you need to install it by brew, and find_package can't find it, you need to set the PATH as below. refer to https://www.kancloud.cn/csyangbinbin/cmake-cookbook1/2157938  https://iscinumpy.gitlab.io/post/omp-on-high-sierra/)
-if(DEFINED ENV{BREW_OPENMP})
-  if($ENV{BREW_OPENMP} EQUAL 1)
-    message(STATUS "Searching for OpenMP in brew path")
-    execute_process(COMMAND brew --prefix OUTPUT_VARIABLE BREW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${BREW_PREFIX}/opt/libomp/include")
+### OpenMP, check if the LLVM_OPENMP environment variable is set (clang doesn't bring openmp, you need to install it by conda, and find_package can't find it sometimes, you need to set the PATH as below.
+if(DEFINED ENV{LLVM_OPENMP} AND "$ENV{LLVM_OPENMP}" STREQUAL "1")
+    message(STATUS "Searching for OpenMP in conda path")
+    set(CONDA_PREFIX $ENV{CONDA_PREFIX})
+    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${CONDA_PREFIX}/include")
     set(OpenMP_CXX_LIB_NAMES "omp")
-    set(OpenMP_omp_LIBRARY "${BREW_PREFIX}/opt/libomp/lib")
+    set(OpenMP_omp_LIBRARY "${CONDA_PREFIX}/lib")
     find_package(OpenMP REQUIRED)
-  else()
+else()
     message(STATUS "Searching for OpenMP in default path")
     find_package(OpenMP REQUIRED)
-  endif()
-else()
-  message(STATUS "BREW_OPENMP not set, searching for OpenMP in default path")
-  find_package(OpenMP REQUIRED)
 endif()
+
 
 
 ### pybind11 xtensor xtl xsimd xtensor-blas xtensor-python
@@ -104,7 +98,6 @@ endif()
 
 ### KFR 
 include_directories("./extern/kfr/include")
-
 
 
 

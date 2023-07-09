@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distributions 📦 to PyPI
+name: Publish to PyPI
 on:
   release:
     types: [published]
@@ -92,12 +92,16 @@ jobs:
 
     - name: Build and Publish
       run: |
-        if [[ "${{ matrix.os }}" == "macos-latest" && "${{ matrix.python-version }}" == "3.11" ]]; then
-          CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build
+        if [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          if [[ "${{ matrix.python-version }}" == "3.11" ]]; then
+            LLVM_OPENMP=1 CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build
+          else
+            LLVM_OPENMP=1 CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build -f wheel
+          fi
+        elif [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build -f wheel
         elif [[ "${{ matrix.os }}" == "windows-latest" ]]; then
           poetry build -f wheel
-        else
-          CXX=${{ matrix.cxx }} NOISEFLOW_USE_CPP=1 poetry build -f wheel
         fi
         poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN_NOISEFLOW }}
         poetry publish

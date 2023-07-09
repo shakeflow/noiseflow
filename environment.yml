@@ -10,3 +10,6 @@ dependencies:
   - xtl   # >=0.7.5
   - xtensor-blas >=0.20.0
   - xtensor-python >=0.26.1
+  - llvm-openmp >=16.0.6
+  - openblas >=0.3.23
+  - libopenblas >=0.3.23
