@@ -18,3 +18,213 @@ Subpackages
    utils/index.rst
 
 
+Package Contents
+----------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   noiseflow.CorrData_Class
+   noiseflow.RFFTData_Class
+   noiseflow.RawData_Class
+   noiseflow.StackData_Class
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   noiseflow.bandpass
+   noiseflow.bandstop
+   noiseflow.corr
+   noiseflow.decimate
+   noiseflow.detrend
+   noiseflow.downloader
+   noiseflow.get_stack_timestamp
+   noiseflow.get_timestamp
+   noiseflow.highpass
+   noiseflow.load_corr
+   noiseflow.load_raw
+   noiseflow.load_rfft
+   noiseflow.load_stack
+   noiseflow.lowpass
+   noiseflow.rfft
+   noiseflow.stack
+   noiseflow.taper
+   noiseflow.time_linspace
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   noiseflow.NOISEFLOW_USE_CPP
+   noiseflow.__version__
+   noiseflow.compile_time_env
+   noiseflow.config_path
+   noiseflow.env
+   noiseflow.env
+
+
+.. py:class:: CorrData_Class(corr_data, dt, corr_method, corr_pair, maxlag, smoothspect_N, flag, flag_gap, threads, jobs, py)
+
+
+   Bases: :py:obj:`object`
+
+   .. py:method:: plot(pair_indx=0, t_min=UTCDateTime('1970-01-01T00:00:00.0'), cc_len=None, cc_step=None, win_start=None, win_end=None, lag_start=None, lag_end=None, amp_normalize=True, amp_scale=1, filter=False, f1=None, f2=None, corners=4, zerophase=True, win_interval=None, mode='waveform', cmap='seismic', linewidth=0.8, yticklabel_num=5, figsize=(10, 6), save=False, save_path=None, dpi=100)
+
+
+   .. py:method:: save(save_path, format='npz', compression=False, h5_compression_format='gzip', h5_compression_opts=3)
+
+
+
+.. py:class:: RFFTData_Class(rfft_data, dt, cc_len, cc_step, time_norm, clip_std, smooth_N, freq_norm, freqmin, freqmax, whiten_npad, smoothspect_N, flag, flag_gap, threads, jobs, py)
+
+
+   Bases: :py:obj:`object`
+
+   .. py:method:: save(save_path, format='npz', compression=False, h5_compression_format='gzip', h5_compression_opts=3)
+
+
+   .. py:method:: spectrogram(channel_indx=0, win_indx=0, raw_data=None, dbscale=False, log=True, figsize=(10, 4), save=False, save_path=None, dpi=100)
+
+
+
+.. py:class:: RawData_Class(data, sampling_rate)
+
+
+   Bases: :py:obj:`object`
+
+   .. py:method:: bandpass(freqmin, freqmax, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+   .. py:method:: bandstop(freqmin, freqmax, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+   .. py:method:: decimate(sampling_rate_new, flag=False, flag_gap=None, threads=1, py=False)
+
+
+   .. py:method:: detrend(type='linear', flag=False, flag_gap=None, threads=1, py=False)
+
+
+   .. py:method:: highpass(freq, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+   .. py:method:: lowpass(freq, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+   .. py:method:: plot(channel_num=0, win_num=0, save=False, save_path=None, dpi=100)
+
+
+   .. py:method:: save(save_path, format='npz', compression=False, h5_compression_format='gzip', h5_compression_opts=3)
+
+
+   .. py:method:: taper(max_percentage=0.05, type='hann', side='both', flag=False, flag_gap=None, threads=1, py=False)
+
+
+
+.. py:class:: StackData_Class(stack_data, stack_ngood, dt, stack_method, par, stack_all, stack_len, stack_step, pick, median_high, median_low, flag, flag_gap, threads, jobs, py)
+
+
+   Bases: :py:obj:`object`
+
+   .. py:method:: plot(pair_indx=0, t_min=UTCDateTime('1970-01-01T00:00:00.0'), stack_len=1, stack_step=0, cc_len=None, cc_step=None, win_start=None, win_end=None, lag_start=None, lag_end=None, amp_normalize=True, amp_scale=1, filter=False, f1=None, f2=None, corners=4, zerophase=True, win_interval=None, mode='waveform', cmap='seismic', linewidth=0.8, yticklabel_num=5, figsize=(10, 6), ngood_label=False, save=False, save_path=None, dpi=300)
+
+
+   .. py:method:: plot_moveout(corr_pair, pair_dist, source_indx=None, receiver_indx=None, dist_start=None, dist_end=None, amp_scale=1, amp_normalize=True, win_num=0, lag_start=None, lag_end=None, filter=False, f1=None, f2=None, corners=4, zerophase=True, dist_interval=None, mode='waveform', cmap='seismic', linewidth=0.8, yticklabel_num=10, figsize=(10, 6), dist_unit='m', velocity=[], save=False, save_path=None, dpi=100)
+
+
+   .. py:method:: plot_moveout_all(corr_pair, pair_dist, dist_start=None, dist_end=None, amp_scale=1, amp_normalize=True, win_num=0, lag_start=None, lag_end=None, filter=False, f1=None, f2=None, corners=4, zerophase=True, dist_interval=None, mode='waveform', cmap='seismic', linewidth=0.8, yticklabel_num=10, figsize=(10, 6), dist_unit='m', velocity=[], save=False, save_path=None, dpi=30)
+
+
+   .. py:method:: save(save_path, format='npz', compression=False, h5_compression_format='gzip', h5_compression_opts=3)
+
+
+
+.. py:function:: bandpass(data, freqmin, freqmax, df, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: bandstop(data, freqmin, freqmax, df, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: corr(rfft_data, dt, corr_method, corr_pair, maxlag, smoothspect_N=10, flag=False, flag_gap=None, threads=1, jobs=1, py=False)
+
+
+.. py:function:: decimate(data, df, df_new, flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: detrend(data, type='linear', flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: downloader(url, type='https', show_info=True, resume=True, filename=None, num_threads=cpu_cores, timeout=10, chunk_size=1024 * 1000, header=None, proxies=None)
+
+
+.. py:function:: get_stack_timestamp(win_num, stack_len, stack_step, cc_len, cc_step, t_min=UTCDateTime('1970-01-01T00:00:00.0'))
+
+
+.. py:function:: get_timestamp(win_num, cc_len, cc_step, t_min=UTCDateTime('1970-01-01T00:00:00.0'))
+
+
+.. py:function:: highpass(data, freq, df, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: load_corr(filename, format='npz', only_header=False)
+
+
+.. py:function:: load_raw(filename, format='npz', only_header=False)
+
+
+.. py:function:: load_rfft(filename, format='npz', only_header=False)
+
+
+.. py:function:: load_stack(filename, format='npz', only_header=False)
+
+
+.. py:function:: lowpass(data, freq, df, corners=4, zerophase=True, flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: rfft(raw_data, dt, cc_len, cc_step, time_norm, clip_std, smooth_N, freq_norm, freqmin, freqmax, whiten_npad, smoothspect_N, flag=False, flag_gap=None, threads=1, jobs=1, py=False)
+
+
+.. py:function:: stack(corr_data, dt, stack_method, par=None, stack_all=True, stack_len=0, stack_step=0, pick=False, median_high=10, median_low=0.1, flag=False, flag_gap=None, threads=1, jobs=1, py=False)
+
+
+.. py:function:: taper(data, max_percentage=0.05, type='hann', side='both', flag=False, flag_gap=None, threads=1, py=False)
+
+
+.. py:function:: time_linspace(start_time, end_time, num)
+
+
+.. py:data:: NOISEFLOW_USE_CPP
+   :value: True
+
+   
+
+.. py:data:: __version__
+   :value: '0.0.9'
+
+   
+
+.. py:data:: compile_time_env
+
+   
+
+.. py:data:: config_path
+
+   
+
+.. py:data:: env
+
+   
+
+.. py:data:: env
+   :value: ''
+
+   
+

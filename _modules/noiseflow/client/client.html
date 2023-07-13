@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>noiseflow.client.client &#8212; NoiseFlow 0.0.1 documentation</title>
+    <title>noiseflow.client.client &#8212; NoiseFlow 0.0.9 documentation</title>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-    <p class="title logo__title">NoiseFlow 0.0.1 documentation</p>
+    <p class="title logo__title">NoiseFlow 0.0.9 documentation</p>
   
 </a></div>
     
@@ -302,6 +302,9 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
+    
+    <li class="breadcrumb-item"><a href="../../noiseflow.html" class="nav-link">noiseflow</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">noiseflow.client.client</li>
   </ul>
 </nav>
@@ -333,7 +336,7 @@ document.write(`
 <span class="n">requests</span><span class="o">.</span><span class="n">packages</span><span class="o">.</span><span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="downloader"><a class="viewcode-back" href="../../../autoapi/noiseflow/client/client/index.html#noiseflow.client.client.downloader">[docs]</a><span class="k">def</span> <span class="nf">downloader</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;https&#39;</span><span class="p">,</span> <span class="n">show_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">cpu_cores</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="downloader"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.client.client.downloader">[docs]</a><span class="k">def</span> <span class="nf">downloader</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;https&#39;</span><span class="p">,</span> <span class="n">show_info</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="n">cpu_cores</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">proxies</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;https&#39;</span><span class="p">:</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">downloader_https</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">show_info</span><span class="p">,</span> <span class="n">resume</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">num_threads</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">proxies</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>

@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>noiseflow.cc.wrapper &#8212; NoiseFlow 0.0.1 documentation</title>
+    <title>noiseflow.cc.wrapper &#8212; NoiseFlow 0.0.9 documentation</title>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-    <p class="title logo__title">NoiseFlow 0.0.1 documentation</p>
+    <p class="title logo__title">NoiseFlow 0.0.9 documentation</p>
   
 </a></div>
     
@@ -302,6 +302,9 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
+    
+    <li class="breadcrumb-item"><a href="../../noiseflow.html" class="nav-link">noiseflow</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">noiseflow.cc.wrapper</li>
   </ul>
 </nav>
@@ -355,7 +358,7 @@ document.write(`
     <span class="n">NOISEFLOW_USE_CPP</span> <span class="o">=</span> <span class="kc">False</span>  
 
 
-<div class="viewcode-block" id="rfft"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.rfft">[docs]</a><span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
+<div class="viewcode-block" id="rfft"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.cc.wrapper.rfft">[docs]</a><span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
         <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
         <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
         <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span> 
@@ -434,7 +437,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="corr"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.corr">[docs]</a><span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+<div class="viewcode-block" id="corr"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.cc.wrapper.corr">[docs]</a><span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
          <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     
     <span class="c1"># check corr_method</span>
@@ -488,7 +491,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">stack_method</span><span class="p">,</span> 
+<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.cc.wrapper.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">stack_method</span><span class="p">,</span> 
           <span class="n">par</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
           <span class="n">stack_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stack_len</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stack_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
           <span class="n">pick</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">median_high</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">median_low</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 

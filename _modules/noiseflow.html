@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Overview: module code &#8212; NoiseFlow 0.0.9 documentation</title>
+    <title>noiseflow &#8212; NoiseFlow 0.0.9 documentation</title>
   
   
   
@@ -45,8 +45,8 @@
     <script src="../_static/copybutton.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.1/dist/embed-amd.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/index';</script>
-    <link rel="canonical" href="yinfu.info/_modules/index.html" />
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/noiseflow';</script>
+    <link rel="canonical" href="yinfu.info/_modules/noiseflow.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -299,7 +299,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Overview: module code</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">noiseflow</li>
   </ul>
 </nav>
 </div>
@@ -316,27 +319,56 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="noiseflow.html">noiseflow</a></li>
-<ul><li><a href="noiseflow/cc/python/corr.html">noiseflow.cc.python.corr</a></li>
-<li><a href="noiseflow/cc/python/rfft.html">noiseflow.cc.python.rfft</a></li>
-<li><a href="noiseflow/cc/python/stack.html">noiseflow.cc.python.stack</a></li>
-<li><a href="noiseflow/cc/python/utils.html">noiseflow.cc.python.utils</a></li>
-<li><a href="noiseflow/cc/wrapper.html">noiseflow.cc.wrapper</a></li>
-<li><a href="noiseflow/client/client.html">noiseflow.client.client</a></li>
-<li><a href="noiseflow/config/corrdata.html">noiseflow.config.corrdata</a></li>
-<li><a href="noiseflow/config/rawdata.html">noiseflow.config.rawdata</a></li>
-<li><a href="noiseflow/config/rfftdata.html">noiseflow.config.rfftdata</a></li>
-<li><a href="noiseflow/config/stackdata.html">noiseflow.config.stackdata</a></li>
-<li><a href="noiseflow/signal/python/decimate.html">noiseflow.signal.python.decimate</a></li>
-<li><a href="noiseflow/signal/python/detrend.html">noiseflow.signal.python.detrend</a></li>
-<li><a href="noiseflow/signal/python/filter.html">noiseflow.signal.python.filter</a></li>
-<li><a href="noiseflow/signal/python/taper.html">noiseflow.signal.python.taper</a></li>
-<li><a href="noiseflow/signal/wrapper.html">noiseflow.signal.wrapper</a></li>
-<li><a href="noiseflow/tests/test_utils/test_load.html">noiseflow.tests.test_utils.test_load</a></li>
-<li><a href="noiseflow/utils/load.html">noiseflow.utils.load</a></li>
-<li><a href="noiseflow/utils/timestamp.html">noiseflow.utils.timestamp</a></li>
-</ul></ul>
+  <h1>Source code for noiseflow</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CONDA_DEFAULT_ENV&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">env</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="env"><a class="viewcode-back" href="../autoapi/noiseflow/index.html#noiseflow.env">[docs]</a>    <span class="n">env</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^a-zA-Z0-9_]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">env</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">50</span><span class="p">]</span>
+    
+<div class="viewcode-block" id="config_path"><a class="viewcode-back" href="../autoapi/noiseflow/index.html#noiseflow.config_path">[docs]</a><span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;~/.noiseflow/config_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s1">.json&#39;</span><span class="p">))</span>    </div>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">noiseflow.lib</span> <span class="kn">import</span> <span class="n">cc_share</span>
+    <span class="kn">from</span> <span class="nn">noiseflow.lib</span> <span class="kn">import</span> <span class="n">signal_share</span>
+<div class="viewcode-block" id="NOISEFLOW_USE_CPP"><a class="viewcode-back" href="../autoapi/noiseflow/index.html#noiseflow.NOISEFLOW_USE_CPP">[docs]</a>    <span class="n">NOISEFLOW_USE_CPP</span> <span class="o">=</span> <span class="kc">True</span></div>
+<span class="k">except</span><span class="p">:</span>
+    <span class="n">NOISEFLOW_USE_CPP</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/.noiseflow&#39;</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="viewcode-block" id="compile_time_env"><a class="viewcode-back" href="../autoapi/noiseflow/index.html#noiseflow.compile_time_env">[docs]</a><span class="n">compile_time_env</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;NOISEFLOW_USE_CPP&quot;</span><span class="p">:</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">}</span></div>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">compile_time_env</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+
+<span class="kn">from</span> <span class="nn">noiseflow.config.rawdata</span> <span class="kn">import</span> <span class="n">RawData_Class</span>
+<span class="kn">from</span> <span class="nn">noiseflow.config.rfftdata</span> <span class="kn">import</span> <span class="n">RFFTData_Class</span>
+<span class="kn">from</span> <span class="nn">noiseflow.config.corrdata</span> <span class="kn">import</span> <span class="n">CorrData_Class</span>
+<span class="kn">from</span> <span class="nn">noiseflow.config.stackdata</span> <span class="kn">import</span> <span class="n">StackData_Class</span>
+
+<span class="kn">from</span> <span class="nn">noiseflow.cc.wrapper</span> <span class="kn">import</span> <span class="n">rfft</span><span class="p">,</span> <span class="n">corr</span><span class="p">,</span> <span class="n">stack</span>
+<span class="kn">from</span> <span class="nn">noiseflow.client.client</span> <span class="kn">import</span> <span class="n">downloader</span>
+<span class="kn">from</span> <span class="nn">noiseflow.signal.wrapper</span> <span class="kn">import</span> <span class="n">bandpass</span><span class="p">,</span> <span class="n">bandstop</span><span class="p">,</span> <span class="n">lowpass</span><span class="p">,</span> <span class="n">highpass</span><span class="p">,</span> <span class="n">detrend</span><span class="p">,</span> <span class="n">decimate</span><span class="p">,</span> <span class="n">taper</span>
+
+<span class="kn">from</span> <span class="nn">noiseflow.utils.load</span> <span class="kn">import</span> <span class="n">load_raw</span><span class="p">,</span> <span class="n">load_rfft</span><span class="p">,</span> <span class="n">load_corr</span><span class="p">,</span> <span class="n">load_stack</span>
+<span class="kn">from</span> <span class="nn">noiseflow.utils.timestamp</span> <span class="kn">import</span> <span class="n">time_linspace</span><span class="p">,</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">get_stack_timestamp</span>
+
+
+<span class="c1"># __all__ = [&quot;cc&quot;,</span>
+<span class="c1">#            &quot;client&quot;,</span>
+<span class="c1">#            &quot;config&quot;,</span>
+<span class="c1">#            &quot;signal&quot;,</span>
+<span class="c1">#            &quot;utils&quot;,</span>
+<span class="c1">#            &quot;tests&quot;]</span>
+
+<div class="viewcode-block" id="__version__"><a class="viewcode-back" href="../autoapi/noiseflow/index.html#noiseflow.__version__">[docs]</a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.0.9&quot;</span></div>
+</pre></div>
 
                 </article>
               

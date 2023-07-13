@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>noiseflow.utils.load &#8212; NoiseFlow 0.0.1 documentation</title>
+    <title>noiseflow.utils.load &#8212; NoiseFlow 0.0.9 documentation</title>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-    <p class="title logo__title">NoiseFlow 0.0.1 documentation</p>
+    <p class="title logo__title">NoiseFlow 0.0.9 documentation</p>
   
 </a></div>
     
@@ -302,6 +302,9 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
+    
+    <li class="breadcrumb-item"><a href="../../noiseflow.html" class="nav-link">noiseflow</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">noiseflow.utils.load</li>
   </ul>
 </nav>
@@ -330,7 +333,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">noiseflow.config.stackdata</span> <span class="kn">import</span> <span class="n">StackData_Class</span>
 
 
-<div class="viewcode-block" id="load_raw"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.utils.load.load_raw">[docs]</a><span class="k">def</span> <span class="nf">load_raw</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_raw"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.load_raw">[docs]</a><span class="k">def</span> <span class="nf">load_raw</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;npz&quot;</span><span class="p">:</span>
         <span class="n">DD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">only_header</span><span class="p">:</span>
@@ -367,7 +370,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="load_rfft"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.utils.load.load_rfft">[docs]</a><span class="k">def</span> <span class="nf">load_rfft</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_rfft"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.load_rfft">[docs]</a><span class="k">def</span> <span class="nf">load_rfft</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;npz&quot;</span><span class="p">:</span>
         <span class="n">DD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">only_header</span><span class="p">:</span>
@@ -463,7 +466,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="load_corr"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.utils.load.load_corr">[docs]</a><span class="k">def</span> <span class="nf">load_corr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_corr"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.load_corr">[docs]</a><span class="k">def</span> <span class="nf">load_corr</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;npz&quot;</span><span class="p">:</span>
         <span class="n">DD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">only_header</span><span class="p">:</span>
@@ -539,7 +542,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="load_stack"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.utils.load.load_stack">[docs]</a><span class="k">def</span> <span class="nf">load_stack</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="load_stack"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.load_stack">[docs]</a><span class="k">def</span> <span class="nf">load_stack</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span> <span class="n">only_header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">par</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;npz&quot;</span><span class="p">:</span>
@@ -645,7 +648,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="decode_dict_from_mat"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.utils.load.decode_dict_from_mat">[docs]</a><span class="k">def</span> <span class="nf">decode_dict_from_mat</span><span class="p">(</span><span class="n">par_data</span><span class="p">):</span>
+<div class="viewcode-block" id="decode_dict_from_mat"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/load/index.html#noiseflow.decode_dict_from_mat">[docs]</a><span class="k">def</span> <span class="nf">decode_dict_from_mat</span><span class="p">(</span><span class="n">par_data</span><span class="p">):</span>
     <span class="n">par</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">par_data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>

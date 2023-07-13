@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>noiseflow.config.rfftdata &#8212; NoiseFlow 0.0.1 documentation</title>
+    <title>noiseflow.config.rfftdata &#8212; NoiseFlow 0.0.9 documentation</title>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-    <p class="title logo__title">NoiseFlow 0.0.1 documentation</p>
+    <p class="title logo__title">NoiseFlow 0.0.9 documentation</p>
   
 </a></div>
     
@@ -302,6 +302,9 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
+    
+    <li class="breadcrumb-item"><a href="../../noiseflow.html" class="nav-link">noiseflow</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">noiseflow.config.rfftdata</li>
   </ul>
 </nav>
@@ -329,7 +332,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">obspy.imaging.spectrogram</span> <span class="kn">import</span> <span class="n">spectrogram</span>
 
 
-<div class="viewcode-block" id="RFFTData_Class"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/rfftdata/index.html#noiseflow.config.rfftdata.RFFTData_Class">[docs]</a><span class="k">class</span> <span class="nc">RFFTData_Class</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="RFFTData_Class"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.rfftdata.RFFTData_Class">[docs]</a><span class="k">class</span> <span class="nc">RFFTData_Class</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
                 <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
                 <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span>
@@ -353,7 +356,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="o">=</span><span class="n">py</span>
 
     <span class="c1"># save data</span>
-<div class="viewcode-block" id="RFFTData_Class.save"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/rfftdata/index.html#noiseflow.config.rfftdata.RFFTData_Class.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;npz&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">h5_compression_format</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">h5_compression_opts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="RFFTData_Class.save"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.rfftdata.RFFTData_Class.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;npz&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">h5_compression_format</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">h5_compression_opts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;npz&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">compression</span><span class="p">:</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span>
@@ -444,7 +447,7 @@ document.write(`
 
 
     <span class="c1"># plot spectrum </span>
-<div class="viewcode-block" id="RFFTData_Class.spectrogram"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/rfftdata/index.html#noiseflow.config.rfftdata.RFFTData_Class.spectrogram">[docs]</a>    <span class="k">def</span> <span class="nf">spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="RFFTData_Class.spectrogram"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.rfftdata.RFFTData_Class.spectrogram">[docs]</a>    <span class="k">def</span> <span class="nf">spectrogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                     <span class="n">channel_indx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
                     <span class="n">win_indx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
                     <span class="n">raw_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
