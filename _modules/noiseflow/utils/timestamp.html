@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>noiseflow.utils.timestamp &#8212; NoiseFlow 0.0.9 documentation</title>
+    <title>noiseflow.utils.timestamp &#8212; NoiseFlow 0.1.0 documentation</title>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-    <p class="title logo__title">NoiseFlow 0.0.9 documentation</p>
+    <p class="title logo__title">NoiseFlow 0.1.0 documentation</p>
   
 </a></div>
     
@@ -302,9 +302,6 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    
-    <li class="breadcrumb-item"><a href="../../noiseflow.html" class="nav-link">noiseflow</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">noiseflow.utils.timestamp</li>
   </ul>
 </nav>
@@ -329,7 +326,7 @@ document.write(`
 
 
 <span class="c1"># get rfft/corr timestamp vector</span>
-<div class="viewcode-block" id="get_timestamp"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/timestamp/index.html#noiseflow.get_timestamp">[docs]</a><span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="n">win_num</span><span class="p">,</span>             
+<div class="viewcode-block" id="get_timestamp"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/timestamp/index.html#noiseflow.utils.timestamp.get_timestamp">[docs]</a><span class="k">def</span> <span class="nf">get_timestamp</span><span class="p">(</span><span class="n">win_num</span><span class="p">,</span>             
                 <span class="n">cc_len</span><span class="p">,</span> 
                 <span class="n">cc_step</span><span class="p">,</span>
                 <span class="n">t_min</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">&quot;1970-01-01T00:00:00.0&quot;</span><span class="p">)):</span>
@@ -342,7 +339,7 @@ document.write(`
 
 
 <span class="c1"># get stack timestamp vector</span>
-<div class="viewcode-block" id="get_stack_timestamp"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/timestamp/index.html#noiseflow.get_stack_timestamp">[docs]</a><span class="k">def</span> <span class="nf">get_stack_timestamp</span><span class="p">(</span><span class="n">win_num</span><span class="p">,</span>
+<div class="viewcode-block" id="get_stack_timestamp"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/timestamp/index.html#noiseflow.utils.timestamp.get_stack_timestamp">[docs]</a><span class="k">def</span> <span class="nf">get_stack_timestamp</span><span class="p">(</span><span class="n">win_num</span><span class="p">,</span>
                         <span class="n">stack_len</span><span class="p">,</span>
                         <span class="n">stack_step</span><span class="p">,</span>
                         <span class="n">cc_len</span><span class="p">,</span> 
@@ -358,7 +355,7 @@ document.write(`
     <span class="k">return</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">win_len</span><span class="p">,</span> <span class="n">win_interval</span><span class="p">,</span> <span class="n">win_start_vector</span></div>
     
 
-<div class="viewcode-block" id="time_linspace"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/timestamp/index.html#noiseflow.time_linspace">[docs]</a><span class="k">def</span> <span class="nf">time_linspace</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+<div class="viewcode-block" id="time_linspace"><a class="viewcode-back" href="../../../autoapi/noiseflow/utils/timestamp/index.html#noiseflow.utils.timestamp.time_linspace">[docs]</a><span class="k">def</span> <span class="nf">time_linspace</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">end_time</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
     <span class="n">t_min</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">t_max</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
     <span class="n">t_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">)</span>

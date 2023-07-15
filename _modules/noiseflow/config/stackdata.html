@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>noiseflow.config.stackdata &#8212; NoiseFlow 0.0.9 documentation</title>
+    <title>noiseflow.config.stackdata &#8212; NoiseFlow 0.1.0 documentation</title>
   
   
   
@@ -110,7 +110,7 @@
   
   
   
-    <p class="title logo__title">NoiseFlow 0.0.9 documentation</p>
+    <p class="title logo__title">NoiseFlow 0.1.0 documentation</p>
   
 </a></div>
     
@@ -302,9 +302,6 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    
-    <li class="breadcrumb-item"><a href="../../noiseflow.html" class="nav-link">noiseflow</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">noiseflow.config.stackdata</li>
   </ul>
 </nav>
@@ -335,7 +332,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">noiseflow.utils.timestamp</span> <span class="kn">import</span> <span class="n">time_linspace</span>
 
 
-<div class="viewcode-block" id="StackData_Class"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.stackdata.StackData_Class">[docs]</a><span class="k">class</span> <span class="nc">StackData_Class</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="StackData_Class"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/stackdata/index.html#noiseflow.config.stackdata.StackData_Class">[docs]</a><span class="k">class</span> <span class="nc">StackData_Class</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stack_data</span><span class="p">,</span> <span class="n">stack_ngood</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
                  <span class="n">stack_method</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">stack_all</span><span class="p">,</span> <span class="n">stack_len</span><span class="p">,</span> <span class="n">stack_step</span><span class="p">,</span> <span class="n">pick</span><span class="p">,</span> <span class="n">median_high</span><span class="p">,</span> <span class="n">median_low</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">,</span> <span class="n">jobs</span><span class="p">,</span> <span class="n">py</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stack_data</span> <span class="o">=</span> <span class="n">stack_data</span>
@@ -356,7 +353,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="o">=</span><span class="n">py</span>
 
     <span class="c1"># save data</span>
-<div class="viewcode-block" id="StackData_Class.save"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.stackdata.StackData_Class.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;npz&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">h5_compression_format</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">h5_compression_opts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="StackData_Class.save"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/stackdata/index.html#noiseflow.config.stackdata.StackData_Class.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;npz&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">h5_compression_format</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">h5_compression_opts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stack_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
 
         <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;npz&#39;</span><span class="p">:</span>
@@ -459,7 +456,7 @@ document.write(`
         
 
     <span class="c1"># plot</span>
-<div class="viewcode-block" id="StackData_Class.plot"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.stackdata.StackData_Class.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="StackData_Class.plot"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/stackdata/index.html#noiseflow.config.stackdata.StackData_Class.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
              <span class="n">pair_indx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
              <span class="n">t_min</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">&quot;1970-01-01T00:00:00.0&quot;</span><span class="p">),</span> 
              <span class="n">stack_len</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
@@ -703,7 +700,7 @@ document.write(`
         
 
 
-<div class="viewcode-block" id="StackData_Class.plot_moveout"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.stackdata.StackData_Class.plot_moveout">[docs]</a>    <span class="k">def</span> <span class="nf">plot_moveout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="StackData_Class.plot_moveout"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/stackdata/index.html#noiseflow.config.stackdata.StackData_Class.plot_moveout">[docs]</a>    <span class="k">def</span> <span class="nf">plot_moveout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                 <span class="n">corr_pair</span><span class="p">,</span> 
                 <span class="n">pair_dist</span><span class="p">,</span> 
                 <span class="n">source_indx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
@@ -966,7 +963,7 @@ document.write(`
 
 
 
-<div class="viewcode-block" id="StackData_Class.plot_moveout_all"><a class="viewcode-back" href="../../../autoapi/noiseflow/index.html#noiseflow.config.stackdata.StackData_Class.plot_moveout_all">[docs]</a>    <span class="k">def</span> <span class="nf">plot_moveout_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="StackData_Class.plot_moveout_all"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/stackdata/index.html#noiseflow.config.stackdata.StackData_Class.plot_moveout_all">[docs]</a>    <span class="k">def</span> <span class="nf">plot_moveout_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                  <span class="n">corr_pair</span><span class="p">,</span> 
                  <span class="n">pair_dist</span><span class="p">,</span> 
                  <span class="n">dist_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
