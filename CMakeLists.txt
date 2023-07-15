@@ -4,7 +4,6 @@
 cmake_minimum_required(VERSION 3.18)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-Wall -g -fPIC -O3")
-set(XTENSOR_USE_XSIMD 1) # set xtensor to use xsimd for SIMD optimization
 set(CMAKE_PREFIX_PATH $ENV{CONDA_PREFIX}) # set conda env path, so that cmake can find some libraries in conda env
 
 
@@ -46,15 +45,8 @@ endif()
 ###################################################################  
 #   Find Libraries
 ###################################################################  
-### [a]. use find_package for numpy
+### Numpy
 find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
-### [b]. use execute_process for numpy
-# execute_process(
-#   COMMAND "${PYTHON_EXECUTABLE}"
-#   -c "import numpy; print(numpy.get_include())"
-#   OUTPUT_VARIABLE NumPy_INCLUDE_DIRS
-#   OUTPUT_STRIP_TRAILING_WHITESPACE
-# )
 
 
 ### OpenMP, check if the LLVM_OPENMP environment variable is set (clang doesn't bring openmp, you need to install it by conda, and find_package can't find it sometimes, you need to set the PATH as below.
@@ -71,12 +63,10 @@ else()
 endif()
 
 
-
-### pybind11 xtensor xtl xsimd xtensor-blas xtensor-python
+### pybind11 xtensor xtl xtensor-blas xtensor-python
 find_package(pybind11 REQUIRED CONFIG)
 find_package(xtensor REQUIRED)
 find_package(xtl REQUIRED)
-find_package(xsimd REQUIRED)
 find_package(xtensor-blas REQUIRED)
 find_package(xtensor-python REQUIRED)
 
@@ -106,14 +96,9 @@ include_directories("./extern/kfr/include")
 ################################################################### 
 pybind11_add_module(cc_share ${CMAKE_SOURCE_DIR}/noiseflow/cc/src/pybind11.cpp)
 target_include_directories(cc_share PRIVATE ${CMAKE_SOURCE_DIR}/noiseflow/cc/src ${CMAKE_SOURCE_DIR}/noiseflow/cc/include)
-target_link_libraries(cc_share PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${FFTW_LIBRARIES} pybind11::module xtensor xtensor::optimize xtensor::use_xsimd xtensor-blas xtensor-python Python::NumPy OpenMP::OpenMP_CXX) 
+target_link_libraries(cc_share PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${FFTW_LIBRARIES} pybind11::module xtensor xtensor::optimize xtensor-blas xtensor-python Python::NumPy OpenMP::OpenMP_CXX) 
 
 
 pybind11_add_module(signal_share ${CMAKE_SOURCE_DIR}/noiseflow/signal/src/pybind11.cpp)
 target_include_directories(signal_share PRIVATE ${CMAKE_SOURCE_DIR}/noiseflow/signal/src ${CMAKE_SOURCE_DIR}/noiseflow/signal/include)
-target_link_libraries(signal_share PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${FFTW_LIBRARIES} pybind11::module xtensor xtensor::optimize xtensor::use_xsimd xtensor-blas xtensor-python Python::NumPy OpenMP::OpenMP_CXX)
-
-
-### setup.py will install the module to the python site-packages
-# install(TARGETS cc_share DESTINATION lib)
-# install(TARGETS signal_share DESTINATION lib)
+target_link_libraries(signal_share PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${FFTW_LIBRARIES} pybind11::module xtensor xtensor::optimize xtensor-blas xtensor-python Python::NumPy OpenMP::OpenMP_CXX)

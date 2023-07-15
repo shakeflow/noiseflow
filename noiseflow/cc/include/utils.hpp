@@ -1,7 +1,7 @@
 /***************************************************************************
  * Copyright (c) Fu Yin                                                     *
  *                                                                          *
- * Distributed under the terms of the BSD 3-Clause License.                 *
+ * Distributed under the terms of the Apache-2.0 License.                   *
  *                                                                          *
  * The full license is in the file LICENSE, distributed with this software. *
  ****************************************************************************/
@@ -16,7 +16,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-// #include <ctime>
 #include <chrono>
 #include <complex>
 #include <exception>
@@ -27,12 +26,11 @@
 #include <xtensor/xview.hpp>
 #include <xtensor/xmath.hpp>
 #include <xtensor/xcomplex.hpp>
-#include <xtensor/xmanipulation.hpp> // for xt::roll
+#include <xtensor/xmanipulation.hpp>
 #include <xtensor/xadapt.hpp>
 #include <xtensor/xsort.hpp>
 #include <xtensor/xoperation.hpp>
 #include <xtensor/xindex_view.hpp>
-#include <xsimd/xsimd.hpp>
 #include <xtensor-blas/xlinalg.hpp>
 #include <xtensor-fftw/basic.hpp>
 #include <xtensor-fftw/helper.hpp>

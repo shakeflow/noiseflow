@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "noiseflow"
-version = "0.0.9"
+version = "0.1.0"
 description = "An ambient noise package"
 authors = ["Fu Yin <oucyinfu@gmail.com>"]
 license = "Apache-2.0"
@@ -49,7 +49,7 @@ jupyter-sphinx = "^0.3.2"
 sphinx-copybutton = "^0.5.0"
 
 [tool.poetry.extras]
-cpp = ["fftw"]
+full = ["stockwell", "tslearn"]
 
 [build-system]
 requires = ["poetry-core", "setuptools", "cmake", "numpy"]
@@ -58,4 +58,3 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.build]
 script = "build.py"
 generate-setup-file = true
-

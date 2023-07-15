@@ -38,11 +38,11 @@ from noiseflow.utils.load import load_raw, load_rfft, load_corr, load_stack
 from noiseflow.utils.timestamp import time_linspace, get_timestamp, get_stack_timestamp
 
 
-# __all__ = ["cc",
-#            "client",
-#            "config",
-#            "signal",
-#            "utils",
-#            "tests"]
+__all__ = ["cc",
+           "client",
+           "config",
+           "signal",
+           "utils",
+           "tests"]
 
-__version__ = "0.0.9"
+__version__ = "0.1.0"
