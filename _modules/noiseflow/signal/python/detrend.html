@@ -321,17 +321,16 @@ document.write(`
                   
   <h1>Source code for noiseflow.signal.python.detrend</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">detrend</span> <span class="k">as</span> <span class="n">scipy_detrend</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">LSQUnivariateSpline</span>
+<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">detrend</span> <span class="k">as</span> <span class="n">scipy_detrend</span>
 
 
-<div class="viewcode-block" id="detrend_py"><a class="viewcode-back" href="../../../../autoapi/noiseflow/signal/python/detrend/index.html#noiseflow.signal.python.detrend.detrend_py">[docs]</a><span class="k">def</span> <span class="nf">detrend_py</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="detrend_py"><a class="viewcode-back" href="../../../../autoapi/noiseflow/signal/python/detrend/index.html#noiseflow.signal.python.detrend.detrend_py">[docs]</a><span class="k">def</span> <span class="nf">detrend_py</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">detrend</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="nb">type</span><span class="p">)</span></div>
+        <span class="n">detrend</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="nb">type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="spline"><a class="viewcode-back" href="../../../../autoapi/noiseflow/signal/python/detrend/index.html#noiseflow.signal.python.detrend.spline">[docs]</a><span class="k">def</span> <span class="nf">spline</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dspline</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
@@ -339,7 +338,7 @@ document.write(`
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-    <span class="n">splknots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dspline</span><span class="o">/</span><span class="mf">2.0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">dspline</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dspline</span><span class="p">)</span>
+    <span class="n">splknots</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dspline</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">dspline</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dspline</span><span class="p">)</span>
     <span class="n">spl</span> <span class="o">=</span> <span class="n">LSQUnivariateSpline</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">splknots</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">spl</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">data</span> <span class="o">-=</span> <span class="n">fit</span>
@@ -347,7 +346,7 @@ document.write(`
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="detrend"><a class="viewcode-back" href="../../../../autoapi/noiseflow/signal/python/detrend/index.html#noiseflow.signal.python.detrend.detrend">[docs]</a><span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dspline</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<div class="viewcode-block" id="detrend"><a class="viewcode-back" href="../../../../autoapi/noiseflow/signal/python/detrend/index.html#noiseflow.signal.python.detrend.detrend">[docs]</a><span class="k">def</span> <span class="nf">detrend</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dspline</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Detrend data.</span>
 <span class="sd">    :param data: The data to detrend.</span>
@@ -377,20 +376,14 @@ document.write(`
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;demean&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;demean&quot;</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
-        <span class="n">scipy_detrend</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="n">overwrite_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;spline&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
+        <span class="n">scipy_detrend</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span> <span class="n">overwrite_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;spline&quot;</span><span class="p">:</span>
         <span class="n">spline</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">dspline</span><span class="o">=</span><span class="n">dspline</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;type must be &#39;demean&#39;, &#39;linear&#39;, or &#39;spline&#39;&quot;</span><span class="p">)</span></div>
-
-
-
-
-
-
 </pre></div>
 
                 </article>

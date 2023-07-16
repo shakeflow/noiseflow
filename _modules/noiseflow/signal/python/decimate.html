@@ -320,19 +320,19 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <h1>Source code for noiseflow.signal.python.decimate</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">scipy</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
 
 
 <div class="viewcode-block" id="decimate_py"><a class="viewcode-back" href="../../../../autoapi/noiseflow/signal/python/decimate/index.html#noiseflow.signal.python.decimate.decimate_py">[docs]</a><span class="k">def</span> <span class="nf">decimate_py</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_new</span><span class="p">,</span> <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="n">test</span> <span class="o">=</span> <span class="n">decimate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_new</span><span class="p">)</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">decimate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_new</span><span class="p">)</span>
     <span class="n">redata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="n">redata</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">decimate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_new</span><span class="p">)</span>
+        <span class="n">redata</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">decimate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">df</span><span class="p">,</span> <span class="n">df_new</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">redata</span></div>
 
@@ -341,18 +341,14 @@ document.write(`
     <span class="n">factor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">df</span> <span class="o">/</span> <span class="n">df_new</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">factor</span> <span class="o">&gt;</span> <span class="mi">13</span><span class="p">:</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="s2">&quot;IRR filter is unstable for decimation factors above&quot;</span>
-                <span class="s2">&quot; 13. Call decimate multiple times.&quot;</span>
-            <span class="p">)</span>
+            <span class="s2">&quot;IRR filter is unstable for decimation factors above&quot;</span>
+            <span class="s2">&quot; 13. Call decimate multiple times.&quot;</span>
+        <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    
-    <span class="n">redata</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">decimate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s1">&#39;iir&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">zero_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">redata</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">decimate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">factor</span><span class="p">,</span> <span class="n">ftype</span><span class="o">=</span><span class="s2">&quot;iir&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">zero_phase</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">redata</span></div>
-
-
-
-
 </pre></div>
 
                 </article>

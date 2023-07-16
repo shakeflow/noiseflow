@@ -320,134 +320,217 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <h1>Source code for noiseflow.cc.wrapper</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">json</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">noiseflow.cc.python.rfft</span> <span class="kn">import</span> <span class="n">RFFTClass_python</span>
 <span class="kn">from</span> <span class="nn">noiseflow.cc.python.corr</span> <span class="kn">import</span> <span class="n">CorrClass_python</span>
+<span class="kn">from</span> <span class="nn">noiseflow.cc.python.rfft</span> <span class="kn">import</span> <span class="n">RFFTClass_python</span>
 <span class="kn">from</span> <span class="nn">noiseflow.cc.python.stack</span> <span class="kn">import</span> <span class="n">StackClass_python</span>
-
-<span class="kn">from</span> <span class="nn">noiseflow.config.rfftdata</span> <span class="kn">import</span> <span class="n">RFFTData_Class</span>
 <span class="kn">from</span> <span class="nn">noiseflow.config.corrdata</span> <span class="kn">import</span> <span class="n">CorrData_Class</span>
+<span class="kn">from</span> <span class="nn">noiseflow.config.rfftdata</span> <span class="kn">import</span> <span class="n">RFFTData_Class</span>
 <span class="kn">from</span> <span class="nn">noiseflow.config.stackdata</span> <span class="kn">import</span> <span class="n">StackData_Class</span>
 
-
 <span class="c1"># Determine the absolute path to the config file</span>
-<span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CONDA_DEFAULT_ENV&#39;</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CONDA_DEFAULT_ENV&quot;</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="n">env</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<div class="viewcode-block" id="env"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.env">[docs]</a>    <span class="n">env</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span></div>
+<div class="viewcode-block" id="env"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.env">[docs]</a>    <span class="n">env</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^a-zA-Z0-9_]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">env</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">50</span><span class="p">]</span>
-    
-<div class="viewcode-block" id="config_path"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.config_path">[docs]</a><span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;~/.noiseflow/config_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s1">.json&#39;</span><span class="p">))</span>    </div>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[^a-zA-Z0-9_]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">50</span><span class="p">]</span>
+
+<div class="viewcode-block" id="config_path"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.config_path">[docs]</a><span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;~/.noiseflow/config_</span><span class="si">{</span><span class="n">env</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">))</span></div>
 
 <span class="c1"># Read the config.json file</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 <div class="viewcode-block" id="config"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.config">[docs]</a>    <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
 
-<span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;NOISEFLOW_USE_CPP&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+<span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;NOISEFLOW_USE_CPP&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
 <div class="viewcode-block" id="NOISEFLOW_USE_CPP"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.NOISEFLOW_USE_CPP">[docs]</a>    <span class="n">NOISEFLOW_USE_CPP</span> <span class="o">=</span> <span class="kc">True</span></div>
     <span class="kn">from</span> <span class="nn">noiseflow.lib</span> <span class="kn">import</span> <span class="n">cc_share</span>
 <span class="k">else</span><span class="p">:</span>
-    <span class="n">NOISEFLOW_USE_CPP</span> <span class="o">=</span> <span class="kc">False</span>  
+    <span class="n">NOISEFLOW_USE_CPP</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="rfft"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.rfft">[docs]</a><span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-        <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
-        <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
-        <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span> 
-        <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    
+<div class="viewcode-block" id="rfft"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.rfft">[docs]</a><span class="k">def</span> <span class="nf">rfft</span><span class="p">(</span>
+    <span class="n">raw_data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">cc_len</span><span class="p">,</span>
+    <span class="n">cc_step</span><span class="p">,</span>
+    <span class="n">time_norm</span><span class="p">,</span>
+    <span class="n">clip_std</span><span class="p">,</span>
+    <span class="n">smooth_N</span><span class="p">,</span>
+    <span class="n">freq_norm</span><span class="p">,</span>
+    <span class="n">freqmin</span><span class="p">,</span>
+    <span class="n">freqmax</span><span class="p">,</span>
+    <span class="n">whiten_npad</span><span class="p">,</span>
+    <span class="n">smoothspect_N</span><span class="p">,</span>
+    <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="c1"># check demision of raw_data</span>
     <span class="k">if</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># check freqmax</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">freqmax</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">))):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freqmax must be &lt;= (</span><span class="si">%f</span><span class="s2">hz) according to fmax=1/(2*dt) formula&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">dt</span><span class="p">)))</span>
-    
+    <span class="k">if</span> <span class="n">freqmax</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;freqmax must be &lt;= (</span><span class="si">%f</span><span class="s2">hz) according to fmax=1/(2*dt) formula&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dt</span><span class="p">))</span>
+        <span class="p">)</span>
+
     <span class="c1"># check cc_len</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">cc_len</span> <span class="o">&gt;</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dt</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cc_len must be &lt;= (raw_data.shape[1]*dt=</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dt</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">cc_len</span> <span class="o">&gt;</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dt</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;cc_len must be &lt;= (raw_data.shape[1]*dt=</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dt</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="c1"># check cc_step</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">cc_step</span> <span class="o">&gt;=</span> <span class="n">cc_len</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">cc_step</span> <span class="o">&gt;=</span> <span class="n">cc_len</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;cc_step must be &lt; (cc_len=</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">cc_len</span><span class="p">)</span>
 
     <span class="c1"># check time_norm</span>
-    <span class="k">if</span> <span class="n">time_norm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;onebit&#39;</span><span class="p">,</span> <span class="s1">&#39;clip&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">time_norm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;onebit&quot;</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="s2">&quot;smooth&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;time_norm must be &#39;no&#39;, &#39;onebit&#39;, &#39;clip&#39;, or &#39;smooth&#39;&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># check freq_norm</span>
-    <span class="k">if</span> <span class="n">freq_norm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;no&#39;</span><span class="p">,</span> <span class="s1">&#39;whiten&#39;</span><span class="p">,</span> <span class="s1">&#39;smooth_whiten&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">freq_norm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;whiten&quot;</span><span class="p">,</span> <span class="s2">&quot;smooth_whiten&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;freq_norm must be &#39;no&#39;, &#39;whiten&#39;, or &#39;smooth_whiten&#39;&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># check threads</span>
     <span class="k">if</span> <span class="n">threads</span> <span class="o">&gt;</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;threads must be &lt;= (raw_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;threads must be &lt;= (raw_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+
     <span class="c1"># check flag_gap</span>
-    <span class="k">if</span> <span class="n">flag_gap</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">flag_gap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">flag_gap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># run rfft</span>
     <span class="k">if</span> <span class="n">py</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">or</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">RFFTClass_python</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-                         <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
-                        <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
-                        <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span>
-                        <span class="n">flag</span><span class="p">,</span> <span class="n">jobs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">or</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">RFFTClass_python</span><span class="p">(</span>
+                <span class="n">raw_data</span><span class="p">,</span>
+                <span class="n">dt</span><span class="p">,</span>
+                <span class="n">cc_len</span><span class="p">,</span>
+                <span class="n">cc_step</span><span class="p">,</span>
+                <span class="n">time_norm</span><span class="p">,</span>
+                <span class="n">clip_std</span><span class="p">,</span>
+                <span class="n">smooth_N</span><span class="p">,</span>
+                <span class="n">freq_norm</span><span class="p">,</span>
+                <span class="n">freqmin</span><span class="p">,</span>
+                <span class="n">freqmax</span><span class="p">,</span>
+                <span class="n">whiten_npad</span><span class="p">,</span>
+                <span class="n">smoothspect_N</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">jobs</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">m</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="n">rfft_data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">output_data</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;raw_data.dtype must be np.float32 or np.float64&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">and</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">:</span>
-            <span class="n">rfft_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">rfft_float</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> 
-                <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
-                <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
-                <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span>
-                <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span>
-                <span class="n">threads</span><span class="p">)</span>
+            <span class="n">rfft_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">rfft_float</span><span class="p">(</span>
+                <span class="n">raw_data</span><span class="p">,</span>
+                <span class="n">dt</span><span class="p">,</span>
+                <span class="n">cc_len</span><span class="p">,</span>
+                <span class="n">cc_step</span><span class="p">,</span>
+                <span class="n">time_norm</span><span class="p">,</span>
+                <span class="n">clip_std</span><span class="p">,</span>
+                <span class="n">smooth_N</span><span class="p">,</span>
+                <span class="n">freq_norm</span><span class="p">,</span>
+                <span class="n">freqmin</span><span class="p">,</span>
+                <span class="n">freqmax</span><span class="p">,</span>
+                <span class="n">whiten_npad</span><span class="p">,</span>
+                <span class="n">smoothspect_N</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">flag_gap</span><span class="p">,</span>
+                <span class="n">threads</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">:</span>
-            <span class="n">rfft_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">rfft_double</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> 
-                <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
-                <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
-                <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span>
-                <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span>
-                <span class="n">threads</span><span class="p">)</span>
+            <span class="n">rfft_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">rfft_double</span><span class="p">(</span>
+                <span class="n">raw_data</span><span class="p">,</span>
+                <span class="n">dt</span><span class="p">,</span>
+                <span class="n">cc_len</span><span class="p">,</span>
+                <span class="n">cc_step</span><span class="p">,</span>
+                <span class="n">time_norm</span><span class="p">,</span>
+                <span class="n">clip_std</span><span class="p">,</span>
+                <span class="n">smooth_N</span><span class="p">,</span>
+                <span class="n">freq_norm</span><span class="p">,</span>
+                <span class="n">freqmin</span><span class="p">,</span>
+                <span class="n">freqmax</span><span class="p">,</span>
+                <span class="n">whiten_npad</span><span class="p">,</span>
+                <span class="n">smoothspect_N</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">flag_gap</span><span class="p">,</span>
+                <span class="n">threads</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;raw_data.dtype must be np.float32, np.float64 or NOISEFLOW_USE_CPP=False&quot;</span><span class="p">)</span>
-    
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;raw_data.dtype must be np.float32, np.float64 or NOISEFLOW_USE_CPP=False&quot;</span>
+            <span class="p">)</span>
+
     <span class="c1"># generate RFFTData object</span>
-    <span class="n">RFFTData</span> <span class="o">=</span> <span class="n">RFFTData_Class</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="p">,</span> 
-        <span class="n">time_norm</span><span class="p">,</span> <span class="n">clip_std</span><span class="p">,</span> <span class="n">smooth_N</span><span class="p">,</span>
-        <span class="n">freq_norm</span><span class="p">,</span> <span class="n">freqmin</span><span class="p">,</span> <span class="n">freqmax</span><span class="p">,</span> <span class="n">whiten_npad</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span>
-        <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span>
-        <span class="n">threads</span><span class="p">,</span> <span class="n">jobs</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span>
-    
+    <span class="n">RFFTData</span> <span class="o">=</span> <span class="n">RFFTData_Class</span><span class="p">(</span>
+        <span class="n">rfft_data</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">,</span>
+        <span class="n">cc_len</span><span class="p">,</span>
+        <span class="n">cc_step</span><span class="p">,</span>
+        <span class="n">time_norm</span><span class="p">,</span>
+        <span class="n">clip_std</span><span class="p">,</span>
+        <span class="n">smooth_N</span><span class="p">,</span>
+        <span class="n">freq_norm</span><span class="p">,</span>
+        <span class="n">freqmin</span><span class="p">,</span>
+        <span class="n">freqmax</span><span class="p">,</span>
+        <span class="n">whiten_npad</span><span class="p">,</span>
+        <span class="n">smoothspect_N</span><span class="p">,</span>
+        <span class="n">flag</span><span class="p">,</span>
+        <span class="n">flag_gap</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">,</span>
+        <span class="n">jobs</span><span class="p">,</span>
+        <span class="n">py</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">RFFTData</span></div>
 
 
-
-<div class="viewcode-block" id="corr"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.corr">[docs]</a><span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
-         <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    
+<div class="viewcode-block" id="corr"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.corr">[docs]</a><span class="k">def</span> <span class="nf">corr</span><span class="p">(</span>
+    <span class="n">rfft_data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">corr_method</span><span class="p">,</span>
+    <span class="n">corr_pair</span><span class="p">,</span>
+    <span class="n">maxlag</span><span class="p">,</span>
+    <span class="n">smoothspect_N</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="c1"># check corr_method</span>
-    <span class="k">if</span> <span class="n">corr_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;xcorr&#39;</span><span class="p">,</span> <span class="s1">&#39;deconv&#39;</span><span class="p">,</span> <span class="s1">&#39;coherency&#39;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">corr_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;xcorr&quot;</span><span class="p">,</span> <span class="s2">&quot;deconv&quot;</span><span class="p">,</span> <span class="s2">&quot;coherency&quot;</span><span class="p">]:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;corr_method must be &#39;xcorr&#39;, &#39;deconv&#39;, or &#39;coherency&#39;&quot;</span><span class="p">)</span>
-    
+
     <span class="c1"># check maxlag</span>
-    <span class="k">if</span> <span class="n">maxlag</span> <span class="o">&gt;</span> <span class="n">dt</span><span class="o">*</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;maxlag must be &lt;= (dt*rfft_data.shape[2]=</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span><span class="o">*</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
-    
+    <span class="k">if</span> <span class="n">maxlag</span> <span class="o">&gt;</span> <span class="n">dt</span> <span class="o">*</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;maxlag must be &lt;= (dt*rfft_data.shape[2]=</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dt</span> <span class="o">*</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="p">)</span>
+
     <span class="c1"># check threads</span>
     <span class="k">if</span> <span class="n">threads</span> <span class="o">&gt;</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;threads must be &lt;= (rfft_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;threads must be &lt;= (rfft_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="c1"># check demision of corr_pair</span>
     <span class="k">if</span> <span class="n">corr_pair</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -455,78 +538,167 @@ document.write(`
 
     <span class="c1"># check threads</span>
     <span class="k">if</span> <span class="n">threads</span> <span class="o">&gt;</span> <span class="n">corr_pair</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;threads must be &lt;= (corr_pair.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">corr_pair</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;threads must be &lt;= (corr_pair.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">corr_pair</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
+
     <span class="c1"># check flag_gap</span>
-    <span class="k">if</span> <span class="n">flag_gap</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">flag_gap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">flag_gap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">corr_pair</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># run corr</span>
     <span class="k">if</span> <span class="n">py</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">):</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">CorrClass_python</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span>
-                <span class="n">smoothspect_N</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">jobs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span> <span class="ow">or</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
+        <span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">CorrClass_python</span><span class="p">(</span>
+                <span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">jobs</span>
+            <span class="p">)</span>
             <span class="n">m</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="n">corr_data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">output_data</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;rfft_data.dtype must be np.complex64 or np.complex128&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">:</span>
-            <span class="n">corr_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">corr_float</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span>
-                <span class="n">smoothspect_N</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+            <span class="n">corr_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">corr_float</span><span class="p">(</span>
+                <span class="n">rfft_data</span><span class="p">,</span>
+                <span class="n">dt</span><span class="p">,</span>
+                <span class="n">corr_method</span><span class="p">,</span>
+                <span class="n">corr_pair</span><span class="p">,</span>
+                <span class="n">maxlag</span><span class="p">,</span>
+                <span class="n">smoothspect_N</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">flag_gap</span><span class="p">,</span>
+                <span class="n">threads</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="ow">and</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">:</span>
-            <span class="n">corr_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">corr_double</span><span class="p">(</span><span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span>
-                <span class="n">smoothspect_N</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+            <span class="n">corr_data</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">corr_double</span><span class="p">(</span>
+                <span class="n">rfft_data</span><span class="p">,</span>
+                <span class="n">dt</span><span class="p">,</span>
+                <span class="n">corr_method</span><span class="p">,</span>
+                <span class="n">corr_pair</span><span class="p">,</span>
+                <span class="n">maxlag</span><span class="p">,</span>
+                <span class="n">smoothspect_N</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">flag_gap</span><span class="p">,</span>
+                <span class="n">threads</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;rfft_data.dtype must be np.complex64, np.complex128 or NOISEFLOW_USE_CPP=False&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;rfft_data.dtype must be np.complex64, np.complex128 or NOISEFLOW_USE_CPP=False&quot;</span>
+            <span class="p">)</span>
 
     <span class="c1"># generate CorrData object</span>
-    <span class="n">CorrData</span> <span class="o">=</span> <span class="n">CorrData_Class</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span>
-        <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">,</span> <span class="n">jobs</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span>
-    
+    <span class="n">CorrData</span> <span class="o">=</span> <span class="n">CorrData_Class</span><span class="p">(</span>
+        <span class="n">corr_data</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">,</span>
+        <span class="n">corr_method</span><span class="p">,</span>
+        <span class="n">corr_pair</span><span class="p">,</span>
+        <span class="n">maxlag</span><span class="p">,</span>
+        <span class="n">smoothspect_N</span><span class="p">,</span>
+        <span class="n">flag</span><span class="p">,</span>
+        <span class="n">flag_gap</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">,</span>
+        <span class="n">jobs</span><span class="p">,</span>
+        <span class="n">py</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">CorrData</span></div>
 
 
-
-<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">stack_method</span><span class="p">,</span> 
-          <span class="n">par</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-          <span class="n">stack_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stack_len</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stack_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
-          <span class="n">pick</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">median_high</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">median_low</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
-          <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    
+<div class="viewcode-block" id="stack"><a class="viewcode-back" href="../../../autoapi/noiseflow/cc/wrapper/index.html#noiseflow.cc.wrapper.stack">[docs]</a><span class="k">def</span> <span class="nf">stack</span><span class="p">(</span>
+    <span class="n">corr_data</span><span class="p">,</span>
+    <span class="n">dt</span><span class="p">,</span>
+    <span class="n">stack_method</span><span class="p">,</span>
+    <span class="n">par</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">stack_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">stack_len</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">stack_step</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">pick</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">median_high</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">median_low</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">flag</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">flag_gap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">py</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
     <span class="c1"># check par</span>
-    <span class="k">if</span> <span class="n">par</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">par</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;axis&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span><span class="s2">&quot;p&quot;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="s2">&quot;g&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="s2">&quot;cc_min&quot;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span><span class="s2">&quot;epsilon&quot;</span><span class="p">:</span><span class="mf">1E-5</span><span class="p">,</span><span class="s2">&quot;maxstep&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span>
-                <span class="s2">&quot;win&quot;</span><span class="p">:</span><span class="kc">None</span><span class="p">,</span><span class="s2">&quot;stat&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;h&quot;</span><span class="p">:</span><span class="mf">0.75</span><span class="p">,</span><span class="s1">&#39;plot&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span><span class="s1">&#39;normalize&#39;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span><span class="s1">&#39;ref&#39;</span><span class="p">:</span><span class="kc">None</span><span class="p">},</span>
-    
+    <span class="k">if</span> <span class="n">par</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">par</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;axis&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="s2">&quot;g&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s2">&quot;cc_min&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                <span class="s2">&quot;epsilon&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">,</span>
+                <span class="s2">&quot;maxstep&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s2">&quot;win&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="s2">&quot;stat&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="mf">0.75</span><span class="p">,</span>
+                <span class="s2">&quot;plot&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;normalize&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;ref&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
     <span class="c1"># check demision of corr_data</span>
     <span class="k">if</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">corr_data</span> <span class="o">=</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="c1"># check stack_method</span>
-    <span class="k">if</span> <span class="n">stack_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;linear&quot;</span><span class="p">,</span><span class="s2">&quot;pws&quot;</span><span class="p">,</span><span class="s2">&quot;robust&quot;</span><span class="p">,</span><span class="s2">&quot;acf&quot;</span><span class="p">,</span><span class="s2">&quot;nroot&quot;</span><span class="p">,</span><span class="s2">&quot;selective&quot;</span><span class="p">,</span><span class="s2">&quot;cluster&quot;</span><span class="p">,</span><span class="s2">&quot;tfpws&quot;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;stack_method must be &#39;linear&#39;, &#39;pws&#39;, &#39;robust&#39;, &#39;acf&#39;, &#39;nroot&#39;, &#39;selective&#39;, &#39;cluster&#39;, or &#39;tfpws&#39;&quot;</span><span class="p">)</span>
-    
+    <span class="k">if</span> <span class="n">stack_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;linear&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pws&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;robust&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;acf&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;nroot&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;selective&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cluster&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;tfpws&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;stack_method must be &#39;linear&#39;, &#39;pws&#39;, &#39;robust&#39;, &#39;acf&#39;, &#39;nroot&#39;, &#39;selective&#39;, &#39;cluster&#39;, or &#39;tfpws&#39;&quot;</span>
+        <span class="p">)</span>
+
     <span class="c1"># check stack_len</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">stack_len</span> <span class="o">&gt;</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;stack_len must be &lt;= (corr_data.shape[1]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">stack_len</span> <span class="o">&gt;</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;stack_len must be &lt;= (corr_data.shape[1]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="c1"># check stack_step</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">stack_step</span> <span class="o">&gt;=</span> <span class="n">stack_len</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">stack_step</span> <span class="o">&gt;=</span> <span class="n">stack_len</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;stack_step must be &lt; (stack_len=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">stack_len</span><span class="p">)</span>
-    
+
     <span class="c1"># check threads</span>
     <span class="k">if</span> <span class="n">threads</span> <span class="o">&gt;</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;threads must be &lt;= (corr_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;threads must be &lt;= (corr_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="c1"># check flag_gap</span>
-    <span class="k">if</span> <span class="n">flag_gap</span><span class="o">==</span><span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">flag_gap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">flag_gap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># run stack</span>
     <span class="k">if</span> <span class="n">py</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">or</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">):</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">StackClass_python</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">stack_method</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">stack_all</span><span class="p">,</span> <span class="n">stack_len</span><span class="p">,</span> <span class="n">stack_step</span><span class="p">,</span> <span class="n">pick</span><span class="p">,</span> <span class="n">median_high</span><span class="p">,</span> <span class="n">median_low</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">jobs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">or</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+        <span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">StackClass_python</span><span class="p">(</span>
+                <span class="n">corr_data</span><span class="p">,</span>
+                <span class="n">stack_method</span><span class="p">,</span>
+                <span class="n">par</span><span class="p">,</span>
+                <span class="n">stack_all</span><span class="p">,</span>
+                <span class="n">stack_len</span><span class="p">,</span>
+                <span class="n">stack_step</span><span class="p">,</span>
+                <span class="n">pick</span><span class="p">,</span>
+                <span class="n">median_high</span><span class="p">,</span>
+                <span class="n">median_low</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">jobs</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">m</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="n">stack_data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">output_data</span>
             <span class="n">stack_ngood</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">ngood_all</span>
@@ -534,26 +706,65 @@ document.write(`
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;corr_data.dtype must be np.float32 or np.float64&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="ow">and</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">:</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">StackClass_float</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">stack_method</span><span class="p">,</span> <span class="n">stack_all</span><span class="p">,</span> <span class="n">stack_len</span><span class="p">,</span> <span class="n">stack_step</span><span class="p">,</span> <span class="n">pick</span><span class="p">,</span> <span class="n">median_high</span><span class="p">,</span> <span class="n">median_low</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">StackClass_float</span><span class="p">(</span>
+                <span class="n">corr_data</span><span class="p">,</span>
+                <span class="n">stack_method</span><span class="p">,</span>
+                <span class="n">stack_all</span><span class="p">,</span>
+                <span class="n">stack_len</span><span class="p">,</span>
+                <span class="n">stack_step</span><span class="p">,</span>
+                <span class="n">pick</span><span class="p">,</span>
+                <span class="n">median_high</span><span class="p">,</span>
+                <span class="n">median_low</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">flag_gap</span><span class="p">,</span>
+                <span class="n">threads</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">m</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="n">stack_data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">get_stackdata</span><span class="p">()</span>
             <span class="n">stack_ngood</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">get_ngood</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">corr_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="ow">and</span> <span class="n">NOISEFLOW_USE_CPP</span><span class="p">:</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">StackClass_double</span><span class="p">(</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">stack_method</span><span class="p">,</span> <span class="n">stack_all</span><span class="p">,</span> <span class="n">stack_len</span><span class="p">,</span> <span class="n">stack_step</span><span class="p">,</span> <span class="n">pick</span><span class="p">,</span> <span class="n">median_high</span><span class="p">,</span> <span class="n">median_low</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">cc_share</span><span class="o">.</span><span class="n">StackClass_double</span><span class="p">(</span>
+                <span class="n">corr_data</span><span class="p">,</span>
+                <span class="n">stack_method</span><span class="p">,</span>
+                <span class="n">stack_all</span><span class="p">,</span>
+                <span class="n">stack_len</span><span class="p">,</span>
+                <span class="n">stack_step</span><span class="p">,</span>
+                <span class="n">pick</span><span class="p">,</span>
+                <span class="n">median_high</span><span class="p">,</span>
+                <span class="n">median_low</span><span class="p">,</span>
+                <span class="n">flag</span><span class="p">,</span>
+                <span class="n">flag_gap</span><span class="p">,</span>
+                <span class="n">threads</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">m</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="n">stack_data</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">get_stackdata</span><span class="p">()</span>
             <span class="n">stack_ngood</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">get_ngood</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;corr_data.dtype must be np.float32, np.float64 or NOISEFLOW_USE_CPP=False&quot;</span><span class="p">)</span>
-    
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;corr_data.dtype must be np.float32, np.float64 or NOISEFLOW_USE_CPP=False&quot;</span>
+            <span class="p">)</span>
+
     <span class="c1"># generate StackData object</span>
-    <span class="n">StackData</span> <span class="o">=</span> <span class="n">StackData_Class</span><span class="p">(</span><span class="n">stack_data</span><span class="p">,</span> <span class="n">stack_ngood</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
-                 <span class="n">stack_method</span><span class="p">,</span> <span class="n">par</span><span class="p">,</span> <span class="n">stack_all</span><span class="p">,</span> <span class="n">stack_len</span><span class="p">,</span> <span class="n">stack_step</span><span class="p">,</span> <span class="n">pick</span><span class="p">,</span> <span class="n">median_high</span><span class="p">,</span> <span class="n">median_low</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">,</span> <span class="n">jobs</span><span class="p">,</span> <span class="n">py</span><span class="p">)</span>
-    
+    <span class="n">StackData</span> <span class="o">=</span> <span class="n">StackData_Class</span><span class="p">(</span>
+        <span class="n">stack_data</span><span class="p">,</span>
+        <span class="n">stack_ngood</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">,</span>
+        <span class="n">stack_method</span><span class="p">,</span>
+        <span class="n">par</span><span class="p">,</span>
+        <span class="n">stack_all</span><span class="p">,</span>
+        <span class="n">stack_len</span><span class="p">,</span>
+        <span class="n">stack_step</span><span class="p">,</span>
+        <span class="n">pick</span><span class="p">,</span>
+        <span class="n">median_high</span><span class="p">,</span>
+        <span class="n">median_low</span><span class="p">,</span>
+        <span class="n">flag</span><span class="p">,</span>
+        <span class="n">flag_gap</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">,</span>
+        <span class="n">jobs</span><span class="p">,</span>
+        <span class="n">py</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">StackData</span></div>
-
-
-
 </pre></div>
 
                 </article>

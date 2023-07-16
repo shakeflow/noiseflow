@@ -321,226 +321,272 @@ document.write(`
                   
   <h1>Source code for noiseflow.config.corrdata</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">savemat</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">obspy.core</span> <span class="kn">import</span> <span class="n">UTCDateTime</span>
 <span class="kn">from</span> <span class="nn">obspy.signal.filter</span> <span class="kn">import</span> <span class="n">bandpass</span>
-<span class="kn">from</span> <span class="nn">noiseflow.utils.timestamp</span> <span class="kn">import</span> <span class="n">time_linspace</span><span class="p">,</span> <span class="n">get_timestamp</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">savemat</span>
+
+<span class="kn">from</span> <span class="nn">noiseflow.utils.timestamp</span> <span class="kn">import</span> <span class="n">get_timestamp</span><span class="p">,</span> <span class="n">time_linspace</span>
 
 
 <div class="viewcode-block" id="CorrData_Class"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/corrdata/index.html#noiseflow.config.corrdata.CorrData_Class">[docs]</a><span class="k">class</span> <span class="nc">CorrData_Class</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corr_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> 
-                 <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span><span class="n">smoothspect_N</span><span class="p">,</span>
-                <span class="n">flag</span><span class="p">,</span> <span class="n">flag_gap</span><span class="p">,</span> <span class="n">threads</span><span class="p">,</span> <span class="n">jobs</span><span class="p">,</span> <span class="n">py</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">corr_data</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">,</span>
+        <span class="n">corr_method</span><span class="p">,</span>
+        <span class="n">corr_pair</span><span class="p">,</span>
+        <span class="n">maxlag</span><span class="p">,</span>
+        <span class="n">smoothspect_N</span><span class="p">,</span>
+        <span class="n">flag</span><span class="p">,</span>
+        <span class="n">flag_gap</span><span class="p">,</span>
+        <span class="n">threads</span><span class="p">,</span>
+        <span class="n">jobs</span><span class="p">,</span>
+        <span class="n">py</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span> <span class="o">=</span> <span class="n">corr_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span> <span class="o">=</span> <span class="n">corr_method</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span> <span class="o">=</span> <span class="n">corr_pair</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span> <span class="o">=</span> <span class="n">maxlag</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="o">=</span><span class="n">smoothspect_N</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="o">=</span><span class="n">flag</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="o">=</span><span class="n">flag_gap</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="o">=</span><span class="n">threads</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="o">=</span><span class="n">jobs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="o">=</span><span class="n">py</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span> <span class="o">=</span> <span class="n">smoothspect_N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag</span> <span class="o">=</span> <span class="n">flag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span> <span class="o">=</span> <span class="n">flag_gap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threads</span> <span class="o">=</span> <span class="n">threads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span> <span class="o">=</span> <span class="n">jobs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">py</span> <span class="o">=</span> <span class="n">py</span>
 
-<div class="viewcode-block" id="CorrData_Class.save"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/corrdata/index.html#noiseflow.config.corrdata.CorrData_Class.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">save_path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;npz&#39;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">h5_compression_format</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">h5_compression_opts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;npz&#39;</span><span class="p">:</span>
+<div class="viewcode-block" id="CorrData_Class.save"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/corrdata/index.html#noiseflow.config.corrdata.CorrData_Class.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">save_path</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;npz&quot;</span><span class="p">,</span>
+        <span class="n">compression</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">h5_compression_format</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">,</span>
+        <span class="n">h5_compression_opts</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;npz&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">compression</span><span class="p">:</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span>
-                                    <span class="n">corr_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
-                                    <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                                    <span class="n">corr_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span><span class="p">,</span>
-                                    <span class="n">corr_pair</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">,</span>
-                                    <span class="n">maxlag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">,</span>
-                                    <span class="n">smoothspect_N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="p">,</span>
-                                    <span class="n">flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">,</span>
-                                    <span class="n">flag_gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="p">,</span>
-                                    <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span>
-                                    <span class="n">jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span>
-                                    <span class="n">py</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span>
+                    <span class="n">save_path</span><span class="p">,</span>
+                    <span class="n">corr_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
+                    <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                    <span class="n">corr_method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span><span class="p">,</span>
+                    <span class="n">corr_pair</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">,</span>
+                    <span class="n">maxlag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">,</span>
+                    <span class="n">smoothspect_N</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="p">,</span>
+                    <span class="n">flag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">,</span>
+                    <span class="n">flag_gap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="p">,</span>
+                    <span class="n">threads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span>
+                    <span class="n">jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span>
+                    <span class="n">py</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">,</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span>
-                        <span class="n">corr_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
-                        <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                        <span class="n">corr_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span><span class="p">,</span>
-                        <span class="n">corr_pair</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">,</span>
-                        <span class="n">maxlag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">,</span>
-                        <span class="n">smoothspect_N</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="p">,</span>
-                        <span class="n">flag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">,</span>
-                        <span class="n">flag_gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="p">,</span>
-                        <span class="n">threads</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span>
-                        <span class="n">jobs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span>
-                        <span class="n">py</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">)</span>
-                
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;h5&#39;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">group</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;noiseflow_group&#39;</span><span class="p">)</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;corr_method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;corr_pair&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;maxlag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;smoothspect_N&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;flag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;flag_gap&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;threads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;jobs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py</span>
-                <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;corr_pair&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">compression</span><span class="p">:</span>
-                    <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;corr_data&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="n">h5_compression_format</span><span class="p">,</span> <span class="n">compression_opts</span><span class="o">=</span><span class="n">h5_compression_opts</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;corr_data&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savez</span><span class="p">(</span>
+                    <span class="n">save_path</span><span class="p">,</span>
+                    <span class="n">corr_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
+                    <span class="n">dt</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                    <span class="n">corr_method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span><span class="p">,</span>
+                    <span class="n">corr_pair</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">,</span>
+                    <span class="n">maxlag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">,</span>
+                    <span class="n">smoothspect_N</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="p">,</span>
+                    <span class="n">flag</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">,</span>
+                    <span class="n">flag_gap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="p">,</span>
+                    <span class="n">threads</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span>
+                    <span class="n">jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span>
+                    <span class="n">py</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">,</span>
+                <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;mat&#39;</span><span class="p">:</span>
-            <span class="n">savemat</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span>
-                <span class="p">{</span><span class="s1">&#39;corr_data&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
-                 <span class="s1">&#39;dt&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
-                 <span class="s1">&#39;corr_method&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span><span class="p">,</span>
-                 <span class="s1">&#39;corr_pair&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">,</span>
-                 <span class="s1">&#39;maxlag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">,</span>
-                 <span class="s1">&#39;smoothspect_N&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="p">,</span>
-                 <span class="s1">&#39;flag&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">,</span>
-                 <span class="s1">&#39;flag_gap&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="p">,</span>
-                 <span class="s1">&#39;threads&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span>
-                 <span class="s1">&#39;jobs&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span>
-                 <span class="s1">&#39;py&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">},</span>
-                <span class="n">do_compression</span><span class="o">=</span><span class="n">compression</span><span class="p">)</span> 
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;h5&quot;</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">save_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">group</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;noiseflow_group&quot;</span><span class="p">)</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;dt&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;corr_method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;corr_pair&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;maxlag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;smoothspect_N&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;flag&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;flag_gap&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;threads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;jobs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;py&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">py</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;corr_pair&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">compression</span><span class="p">:</span>
+                    <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                        <span class="s2">&quot;corr_data&quot;</span><span class="p">,</span>
+                        <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
+                        <span class="n">compression</span><span class="o">=</span><span class="n">h5_compression_format</span><span class="p">,</span>
+                        <span class="n">compression_opts</span><span class="o">=</span><span class="n">h5_compression_opts</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;corr_data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
+            <span class="n">savemat</span><span class="p">(</span>
+                <span class="n">save_path</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;corr_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">,</span>
+                    <span class="s2">&quot;dt&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span>
+                    <span class="s2">&quot;corr_method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span><span class="p">,</span>
+                    <span class="s2">&quot;corr_pair&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_pair</span><span class="p">,</span>
+                    <span class="s2">&quot;maxlag&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">,</span>
+                    <span class="s2">&quot;smoothspect_N&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothspect_N</span><span class="p">,</span>
+                    <span class="s2">&quot;flag&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">,</span>
+                    <span class="s2">&quot;flag_gap&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag_gap</span><span class="p">,</span>
+                    <span class="s2">&quot;threads&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="p">,</span>
+                    <span class="s2">&quot;jobs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span>
+                    <span class="s2">&quot;py&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="n">do_compression</span><span class="o">=</span><span class="n">compression</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;format must be &#39;npz&#39;, &#39;h5&#39; or &#39;mat&#39;&quot;</span><span class="p">)</span></div>
-        
 
     <span class="c1"># plot</span>
-<div class="viewcode-block" id="CorrData_Class.plot"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/corrdata/index.html#noiseflow.config.corrdata.CorrData_Class.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
-             <span class="n">pair_indx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
-             <span class="n">t_min</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">&quot;1970-01-01T00:00:00.0&quot;</span><span class="p">),</span> 
-             <span class="n">cc_len</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">cc_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">win_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">win_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">lag_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">lag_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">amp_normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-             <span class="n">amp_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-             <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-             <span class="n">f1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">f2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">corners</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> 
-             <span class="n">zerophase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-             <span class="n">win_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;waveform&#39;</span><span class="p">,</span> 
-             <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;seismic&#39;</span><span class="p">,</span>
-             <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> 
-             <span class="n">yticklabel_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
-             <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
-             <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
-             <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-             <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-        
+<div class="viewcode-block" id="CorrData_Class.plot"><a class="viewcode-back" href="../../../autoapi/noiseflow/config/corrdata/index.html#noiseflow.config.corrdata.CorrData_Class.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">pair_indx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">t_min</span><span class="o">=</span><span class="n">UTCDateTime</span><span class="p">(</span><span class="s2">&quot;1970-01-01T00:00:00.0&quot;</span><span class="p">),</span>
+        <span class="n">cc_len</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">cc_step</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">win_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">win_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lag_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lag_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">amp_normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">amp_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="nb">filter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">f1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">f2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">corners</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+        <span class="n">zerophase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">win_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;waveform&quot;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+        <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+        <span class="n">yticklabel_num</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+        <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="c1"># check pair_indx</span>
         <span class="k">if</span> <span class="n">pair_indx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;pair_indx must be &lt;= (corr_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;pair_indx must be &lt;= (corr_data.shape[0]=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
+
         <span class="c1"># init cc_len cc_step</span>
-        <span class="k">if</span> <span class="n">cc_len</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cc_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
-        <span class="k">if</span> <span class="n">cc_step</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cc_len</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cc_len</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span>
+        <span class="k">if</span> <span class="n">cc_step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cc_step</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="c1"># init timestamp</span>
-        <span class="n">t_max</span><span class="p">,</span> <span class="n">win_interval_raw</span><span class="p">,</span> <span class="n">win_vector</span> <span class="o">=</span> <span class="n">get_timestamp</span><span class="p">(</span><span class="n">win_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> 
-                                                        <span class="n">cc_len</span><span class="o">=</span><span class="n">cc_len</span><span class="p">,</span> 
-                                                        <span class="n">cc_step</span><span class="o">=</span><span class="n">cc_step</span><span class="p">,</span> 
-                                                        <span class="n">t_min</span><span class="o">=</span><span class="n">t_min</span><span class="p">)</span>
+        <span class="n">t_max</span><span class="p">,</span> <span class="n">win_interval_raw</span><span class="p">,</span> <span class="n">win_vector</span> <span class="o">=</span> <span class="n">get_timestamp</span><span class="p">(</span>
+            <span class="n">win_num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cc_len</span><span class="o">=</span><span class="n">cc_len</span><span class="p">,</span> <span class="n">cc_step</span><span class="o">=</span><span class="n">cc_step</span><span class="p">,</span> <span class="n">t_min</span><span class="o">=</span><span class="n">t_min</span>
+        <span class="p">)</span>
 
         <span class="c1"># init win_start</span>
-        <span class="k">if</span> <span class="n">win_start</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">win_start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">win_start</span> <span class="o">=</span> <span class="n">t_min</span>
         <span class="k">if</span> <span class="n">win_start</span> <span class="o">&lt;</span> <span class="n">t_min</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;win_start must be &gt;= (t_min=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">t_min</span><span class="p">))</span>
 
         <span class="c1"># init win_end</span>
-        <span class="k">if</span> <span class="n">win_end</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">win_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">win_end</span> <span class="o">=</span> <span class="n">t_max</span>
         <span class="k">if</span> <span class="n">win_end</span> <span class="o">&gt;</span> <span class="n">t_max</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;win_end must be &lt;= (t_max=</span><span class="si">%s</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">t_max</span><span class="p">))</span>
 
         <span class="c1"># init win_interval</span>
-        <span class="k">if</span> <span class="n">win_interval</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">win_interval</span> <span class="o">=</span> <span class="n">win_interval_raw</span>      
+        <span class="k">if</span> <span class="n">win_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">win_interval</span> <span class="o">=</span> <span class="n">win_interval_raw</span>
         <span class="k">if</span> <span class="n">win_interval</span> <span class="o">&lt;</span> <span class="n">win_interval_raw</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;win_interval must be &gt;= </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">win_interval_raw</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">win_interval</span> <span class="o">&gt;</span> <span class="n">t_max</span><span class="o">-</span><span class="n">t_min</span><span class="o">-</span><span class="n">cc_len</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;win_interval must be &lt;= </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t_max</span><span class="o">-</span><span class="n">t_min</span><span class="o">-</span><span class="n">cc_len</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">win_interval</span> <span class="o">&gt;</span> <span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span> <span class="o">-</span> <span class="n">cc_len</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;win_interval must be &lt;= </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span> <span class="o">-</span> <span class="n">cc_len</span><span class="p">))</span>
 
-        <span class="c1"># init lag_start </span>
-        <span class="k">if</span> <span class="n">lag_start</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># init lag_start</span>
+        <span class="k">if</span> <span class="n">lag_start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">lag_start</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span>
         <span class="k">if</span> <span class="n">lag_start</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;lag_start must be &gt;= (-maxlag=-</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">)</span>
-        
+
         <span class="c1"># init lag_end</span>
-        <span class="k">if</span> <span class="n">lag_end</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">lag_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">lag_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span>
         <span class="k">if</span> <span class="n">lag_end</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;lag_end must be &lt;= (maxlag=</span><span class="si">%f</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">)</span>
-        
+
         <span class="c1"># lag vector</span>
-        <span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lag_start</span><span class="p">,</span> <span class="n">lag_end</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-        <span class="n">tp_start</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">lag_start</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
-        <span class="n">tp_end</span> <span class="o">=</span> <span class="n">tp_start</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">tt</span><span class="p">)</span>  <span class="c1"># make sure same length, so do not use round((lag_end+self.maxlag+self.dt)/self.dt)</span>
+        <span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lag_start</span><span class="p">,</span> <span class="n">lag_end</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">tp_start</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">lag_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">tp_end</span> <span class="o">=</span> <span class="n">tp_start</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">tt</span>
+        <span class="p">)</span>  <span class="c1"># make sure same length, so do not use round((lag_end+self.maxlag+self.dt)/self.dt)</span>
 
         <span class="c1"># select and filter data according to win_start, win_end</span>
         <span class="n">win_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">win_vector</span> <span class="o">&gt;=</span> <span class="n">win_start</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">win_vector</span> <span class="o">&lt;=</span> <span class="n">win_end</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">filter</span><span class="p">:</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">win_indx</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tt</span><span class="p">)))</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">win_indx</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tt</span><span class="p">)))</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">win_indx</span><span class="p">)):</span>
-                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">bandpass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">[</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">win_indx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tp_start</span><span class="p">:</span><span class="n">tp_end</span><span class="p">],</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">),</span> <span class="n">corners</span><span class="o">=</span><span class="n">corners</span><span class="p">,</span> <span class="n">zerophase</span><span class="o">=</span><span class="n">zerophase</span><span class="p">)</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">bandpass</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">[</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">win_indx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tp_start</span><span class="p">:</span><span class="n">tp_end</span><span class="p">],</span>
+                    <span class="n">f1</span><span class="p">,</span>
+                    <span class="n">f2</span><span class="p">,</span>
+                    <span class="nb">int</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="p">),</span>
+                    <span class="n">corners</span><span class="o">=</span><span class="n">corners</span><span class="p">,</span>
+                    <span class="n">zerophase</span><span class="o">=</span><span class="n">zerophase</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_data</span><span class="p">[</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">win_indx</span><span class="p">,</span> <span class="n">tp_start</span><span class="p">:</span><span class="n">tp_end</span><span class="p">]</span>
 
         <span class="c1"># plot</span>
-        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;waveform&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;waveform&quot;</span><span class="p">:</span>
             <span class="c1"># init fig</span>
             <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
 
             <span class="c1"># normalize</span>
             <span class="k">if</span> <span class="n">amp_normalize</span><span class="p">:</span>
-                <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+                <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">data_plot</span> <span class="o">=</span> <span class="n">amp_scale</span><span class="o">*</span><span class="n">data</span><span class="o">/</span><span class="n">scale</span>
+                    <span class="n">data_plot</span> <span class="o">=</span> <span class="n">amp_scale</span> <span class="o">*</span> <span class="n">data</span> <span class="o">/</span> <span class="n">scale</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data is all zeros in amp_normalize=True&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">scale</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">data_plot</span> <span class="o">=</span> <span class="n">amp_scale</span><span class="o">*</span><span class="n">data</span><span class="o">/</span><span class="n">scale</span>
+                    <span class="n">data_plot</span> <span class="o">=</span> <span class="n">amp_scale</span> <span class="o">*</span> <span class="n">data</span> <span class="o">/</span> <span class="n">scale</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data is all zeros in amp_normalize=False&quot;</span><span class="p">)</span>
 
             <span class="c1"># get win_interval index</span>
-            <span class="n">ydist_n</span><span class="o">=</span><span class="p">[]</span>
-            <span class="n">win_interval_n</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">win_interval</span><span class="o">/</span><span class="n">win_interval_raw</span><span class="p">)</span>
+            <span class="n">ydist_n</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">win_interval_n</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">win_interval</span> <span class="o">/</span> <span class="n">win_interval_raw</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">win_indx</span><span class="p">),</span> <span class="n">win_interval_n</span><span class="p">):</span>
                 <span class="n">ydist_n</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">ydist_n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ydist_n</span><span class="p">))</span>
 
             <span class="c1"># plot wavefrom</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ydist_n</span><span class="p">)):</span>
-                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">data_plot</span><span class="p">[</span><span class="n">ydist_n</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">+</span><span class="n">ydist_n</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="n">tt</span><span class="p">,</span> <span class="n">data_plot</span><span class="p">[</span><span class="n">ydist_n</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="n">ydist_n</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span>
+                <span class="p">)</span>
 
             <span class="c1"># set x axis</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;CorrData: pair_indx=</span><span class="si">%d</span><span class="s2">, filter=[</span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">] hz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                <span class="s2">&quot;CorrData: pair_indx=</span><span class="si">%d</span><span class="s2">, filter=[</span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">] hz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time(s)&#39;</span><span class="p">)</span>
-            
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time(s)&quot;</span><span class="p">)</span>
+
             <span class="c1"># set y axis</span>
-            <span class="n">yy_tick</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">win_indx</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
+            <span class="n">yy_tick</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">win_indx</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
             <span class="n">yy_label_UTC</span> <span class="o">=</span> <span class="n">time_linspace</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
-            <span class="n">yy_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">yy_label_UTC</span><span class="p">])</span>
+            <span class="n">yy_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">yy_label_UTC</span><span class="p">])</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yy_tick</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">yy_label</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
 
@@ -548,55 +594,67 @@ document.write(`
             <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;save_path must be specified&quot;</span><span class="p">)</span>
-                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+                <span class="p">)</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;mat&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;mat&quot;</span><span class="p">:</span>
             <span class="c1"># init fig</span>
             <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
 
             <span class="c1"># average all data</span>
-            <span class="n">cc_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+            <span class="n">cc_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 
             <span class="c1"># average win_interval data</span>
-            <span class="n">ntrace</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">win_end</span><span class="o">-</span><span class="n">win_start</span><span class="p">)</span><span class="o">/</span><span class="n">win_interval</span><span class="p">)</span>
-            <span class="n">ndata</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">ntrace</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">tt</span><span class="p">)))</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ntrace</span><span class="p">):</span>
-                <span class="n">tindx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(((</span><span class="n">win_vector</span><span class="o">-</span><span class="n">win_start</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">i</span><span class="o">*</span><span class="n">win_interval</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">win_vector</span><span class="o">-</span><span class="n">win_start</span><span class="p">)</span><span class="o">&lt;</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">win_interval</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">ndata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">tindx</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">ntrace</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">win_end</span> <span class="o">-</span> <span class="n">win_start</span><span class="p">)</span> <span class="o">/</span> <span class="n">win_interval</span><span class="p">)</span>
+            <span class="n">ndata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">ntrace</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tt</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntrace</span><span class="p">):</span>
+                <span class="n">tindx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="p">((</span><span class="n">win_vector</span> <span class="o">-</span> <span class="n">win_start</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">win_interval</span><span class="p">)</span>
+                    <span class="o">&amp;</span> <span class="p">((</span><span class="n">win_vector</span> <span class="o">-</span> <span class="n">win_start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">win_interval</span><span class="p">)</span>
+                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">ndata</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">tindx</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
             <span class="c1"># normalize waveforms</span>
             <span class="k">if</span> <span class="n">amp_normalize</span><span class="p">:</span>
-                <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ndata</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+                <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ndata</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">ndata_plot</span> <span class="o">=</span> <span class="n">ndata</span><span class="o">/</span><span class="n">scale</span>
+                    <span class="n">ndata_plot</span> <span class="o">=</span> <span class="n">ndata</span> <span class="o">/</span> <span class="n">scale</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data is all zeros in amp_normalize=True&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ndata</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">scale</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">ndata_plot</span> <span class="o">=</span> <span class="n">ndata</span><span class="o">/</span><span class="n">scale</span>
+                    <span class="n">ndata_plot</span> <span class="o">=</span> <span class="n">ndata</span> <span class="o">/</span> <span class="n">scale</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;data is all zeros in amp_normalize=False&quot;</span><span class="p">)</span>
-                
+
             <span class="c1"># plot mat</span>
-            <span class="n">cax</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span><span class="n">ndata_plot</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">lag_start</span><span class="p">,</span> <span class="n">lag_end</span><span class="p">,</span> <span class="n">ntrace</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">ntrace</span><span class="o">/</span><span class="mi">10</span><span class="o">*</span><span class="n">cc_mean</span><span class="o">+</span><span class="n">ntrace</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
-            
+            <span class="n">ax</span><span class="o">.</span><span class="n">matshow</span><span class="p">(</span>
+                <span class="n">ndata_plot</span><span class="p">,</span>
+                <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">lag_start</span><span class="p">,</span> <span class="n">lag_end</span><span class="p">,</span> <span class="n">ntrace</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+                <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="p">)</span>  <span class="c1"># cax =</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">ntrace</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">cc_mean</span> <span class="o">+</span> <span class="n">ntrace</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="n">linewidth</span><span class="p">)</span>
+
             <span class="c1"># set x axis</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;CorrData: pair_indx=</span><span class="si">%d</span><span class="s2">, filter=[</span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">] hz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span>
+                <span class="s2">&quot;CorrData: pair_indx=</span><span class="si">%d</span><span class="s2">, filter=[</span><span class="si">%.2f</span><span class="s2">, </span><span class="si">%.2f</span><span class="s2">] hz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">pair_indx</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">tt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time(s)&#39;</span><span class="p">)</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
-            
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time(s)&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
+
             <span class="c1"># set y axis</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">invert_yaxis</span><span class="p">()</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntrace</span><span class="p">)</span>
-            <span class="n">yy_tick</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntrace</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
-            <span class="n">yy_label_UTC</span><span class="o">=</span><span class="n">time_linspace</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
-            <span class="n">yy_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">yy_label_UTC</span><span class="p">])</span>
+            <span class="n">yy_tick</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ntrace</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
+            <span class="n">yy_label_UTC</span> <span class="o">=</span> <span class="n">time_linspace</span><span class="p">(</span><span class="n">win_start</span><span class="p">,</span> <span class="n">win_end</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">yticklabel_num</span><span class="p">)</span>
+            <span class="n">yy_label</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">yy_label_UTC</span><span class="p">])</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">yy_tick</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">yy_label</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
 
@@ -604,14 +662,15 @@ document.write(`
             <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;save_path must be specified&quot;</span><span class="p">)</span>
-                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span> <span class="n">bbox_inches</span> <span class="o">=</span> <span class="s1">&#39;tight&#39;</span><span class="p">)</span> 
+                <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_path</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;pdf&quot;</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+                <span class="p">)</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mode must be &#39;waveform&#39; or &#39;mat&#39;&quot;</span><span class="p">)</span></div></div>
-        
 </pre></div>
 
                 </article>

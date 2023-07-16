@@ -321,11 +321,12 @@ document.write(`
                   
   <h1>Source code for noiseflow.cc.python.corr</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">scipy</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span> 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
 <span class="kn">from</span> <span class="nn">noiseflow.cc.python.utils</span> <span class="kn">import</span> <span class="n">moving_ave</span><span class="p">,</span> <span class="n">split</span>
 
 
@@ -343,10 +344,9 @@ document.write(`
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">win_num</span><span class="p">):</span>
         <span class="n">ss</span> <span class="o">=</span> <span class="n">source_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
         <span class="n">temp</span> <span class="o">=</span> <span class="n">moving_ave</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ss</span><span class="p">),</span> <span class="n">smoothspect_N</span><span class="p">)</span>
-        <span class="n">ss_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> 
-                               <span class="n">temp</span><span class="p">,</span> 
-                               <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ss</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> 
-                               <span class="n">where</span><span class="o">=</span><span class="n">temp</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ss_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+            <span class="n">ss</span><span class="p">,</span> <span class="n">temp</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ss</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">temp</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="p">)</span>
 
     <span class="n">rfft_corr_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">ss_data</span><span class="p">)</span> <span class="o">*</span> <span class="n">receiver_data</span>
 
@@ -365,16 +365,13 @@ document.write(`
         <span class="n">rr</span> <span class="o">=</span> <span class="n">receiver_data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
         <span class="n">ss_temp</span> <span class="o">=</span> <span class="n">moving_ave</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ss</span><span class="p">),</span> <span class="n">smoothspect_N</span><span class="p">)</span>
         <span class="n">rr_temp</span> <span class="o">=</span> <span class="n">moving_ave</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rr</span><span class="p">),</span> <span class="n">smoothspect_N</span><span class="p">)</span>
-        <span class="n">ss_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> 
-                                <span class="n">ss_temp</span><span class="p">,</span> 
-                                <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ss</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> 
-                                <span class="n">where</span><span class="o">=</span><span class="n">ss_temp</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
-        
-        <span class="n">rr_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">rr</span><span class="p">,</span>
-                                <span class="n">rr_temp</span><span class="p">,</span>
-                                <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">rr</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span>
-                                <span class="n">where</span><span class="o">=</span><span class="n">rr_temp</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">ss_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+            <span class="n">ss</span><span class="p">,</span> <span class="n">ss_temp</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ss</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">ss_temp</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="p">)</span>
 
+        <span class="n">rr_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span>
+            <span class="n">rr</span><span class="p">,</span> <span class="n">rr_temp</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">rr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">rr</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">where</span><span class="o">=</span><span class="n">rr_temp</span> <span class="o">!=</span> <span class="mi">0</span>
+        <span class="p">)</span>
 
     <span class="n">rfft_corr_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">ss_data</span><span class="p">)</span> <span class="o">*</span> <span class="n">rr_data</span>
 
@@ -382,9 +379,9 @@ document.write(`
 
 
 <div class="viewcode-block" id="CorrClass_python"><a class="viewcode-back" href="../../../../autoapi/noiseflow/cc/python/corr/index.html#noiseflow.cc.python.corr.CorrClass_python">[docs]</a><span class="k">class</span> <span class="nc">CorrClass_python</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span>
-                <span class="n">smoothspect_N</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">jobs</span><span class="p">):</span>
-        
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">rfft_data</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">corr_method</span><span class="p">,</span> <span class="n">corr_pair</span><span class="p">,</span> <span class="n">maxlag</span><span class="p">,</span> <span class="n">smoothspect_N</span><span class="p">,</span> <span class="n">flag</span><span class="p">,</span> <span class="n">jobs</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rfft_data</span> <span class="o">=</span> <span class="n">rfft_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span> <span class="o">=</span> <span class="n">corr_method</span>
@@ -398,7 +395,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">channel_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">win_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rfft_npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rfft_npts</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rfft_npts</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
 
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">rfft_npts</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rfft_npts</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span>
         <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">maxlag</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -408,17 +405,20 @@ document.write(`
 
         <span class="c1"># initialize output_data</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pair_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">win_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_npts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pair_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">win_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_npts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">time_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">freq_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex64</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">rfft_data</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pair_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">win_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_npts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pair_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">win_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_npts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">time_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">freq_dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: please input the correct data type.&quot;</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
 
 <div class="viewcode-block" id="CorrClass_python.corr"><a class="viewcode-back" href="../../../../autoapi/noiseflow/cc/python/corr/index.html#noiseflow.cc.python.corr.CorrClass_python.corr">[docs]</a>    <span class="k">def</span> <span class="nf">corr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_data</span><span class="p">,</span> <span class="n">receiver_data</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_method</span> <span class="o">==</span> <span class="s2">&quot;xcorr&quot;</span><span class="p">:</span>
@@ -430,13 +430,11 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;error: please input the correct corr method.&quot;</span><span class="p">)</span>
             <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        
-        <span class="k">return</span> <span class="n">rfft_corr_data</span></div>
 
+        <span class="k">return</span> <span class="n">rfft_corr_data</span></div>
 
 <div class="viewcode-block" id="CorrClass_python.irfft"><a class="viewcode-back" href="../../../../autoapi/noiseflow/cc/python/corr/index.html#noiseflow.cc.python.corr.CorrClass_python.irfft">[docs]</a>    <span class="k">def</span> <span class="nf">irfft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rfft_corr_data</span><span class="p">):</span>
         <span class="n">corr_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">win_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_dtype</span><span class="p">)</span>
-
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">win_num</span><span class="p">):</span>
             <span class="n">ss</span> <span class="o">=</span> <span class="n">rfft_corr_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
@@ -444,12 +442,10 @@ document.write(`
 
         <span class="k">return</span> <span class="n">corr_data</span></div>
 
-
 <div class="viewcode-block" id="CorrClass_python.cut_maxlag"><a class="viewcode-back" href="../../../../autoapi/noiseflow/cc/python/corr/index.html#noiseflow.cc.python.corr.CorrClass_python.cut_maxlag">[docs]</a>    <span class="k">def</span> <span class="nf">cut_maxlag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">corr_data</span><span class="p">):</span>
-        <span class="n">maxlag_corr_data</span> <span class="o">=</span> <span class="n">corr_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_start</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">maxlag_end</span><span class="p">]</span>
+        <span class="n">maxlag_corr_data</span> <span class="o">=</span> <span class="n">corr_data</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_start</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxlag_end</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">maxlag_corr_data</span></div>
-
 
 <div class="viewcode-block" id="CorrClass_python.process_chunk"><a class="viewcode-back" href="../../../../autoapi/noiseflow/cc/python/corr/index.html#noiseflow.cc.python.corr.CorrClass_python.process_chunk">[docs]</a>    <span class="k">def</span> <span class="nf">process_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span><span class="p">):</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
@@ -474,16 +470,18 @@ document.write(`
 
         <span class="k">return</span> <span class="n">results</span></div>
 
-
 <div class="viewcode-block" id="CorrClass_python.run"><a class="viewcode-back" href="../../../../autoapi/noiseflow/cc/python/corr/index.html#noiseflow.cc.python.corr.CorrClass_python.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flag</span><span class="p">:</span>
             <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Start corr with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="si">}</span><span class="s2"> jobs in python...&quot;</span><span class="p">)</span>
-        
+
         <span class="c1"># parallel processing</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">jobs</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">chunk_list</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pair_num</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">)</span>
-            <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;loky&quot;</span><span class="p">)(</span><span class="n">delayed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_chunk</span><span class="p">)(</span><span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="ow">in</span> <span class="n">chunk_list</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">jobs</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;loky&quot;</span><span class="p">)(</span>
+                <span class="n">delayed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_chunk</span><span class="p">)(</span><span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">chunk_start</span><span class="p">,</span> <span class="n">chunk_end</span> <span class="ow">in</span> <span class="n">chunk_list</span>
+            <span class="p">)</span>
 
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chunk_results</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
                 <span class="n">chunk_start</span> <span class="o">=</span> <span class="n">chunk_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
@@ -497,9 +495,6 @@ document.write(`
             <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;End corr with total time </span><span class="si">{</span><span class="n">elapsed_time</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span></div></div>
-
-
-
 </pre></div>
 
                 </article>
