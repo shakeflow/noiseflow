@@ -37,6 +37,4 @@
 #include <xtensor-python/pyarray.hpp>
 #include <xtensor-python/pytensor.hpp>
 
-
-
 #endif
