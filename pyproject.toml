@@ -66,8 +66,7 @@ generate-setup-file = true
 [tool.black]
 line-length = 88
 target-version = ['py39']
-include = 'noiseflow/.*\.py$'
+include = '.*\.py$'
 
 [tool.isort]
 profile = "black"
-src_paths = ["noiseflow"]
