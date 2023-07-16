@@ -2,12 +2,11 @@ name: Publish to Test PyPI
 
 on:
   push:
-    branches:    
+    branches:
       - 'test/**'
 
 jobs:
   testpypi:
-
     strategy:
       fail-fast: false
       matrix:
@@ -29,7 +28,7 @@ jobs:
             cc: cl
             cxx: cl
             label: win-64
-    
+
     name: ${{ matrix.label }}-Python-${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
 
@@ -58,7 +57,7 @@ jobs:
       with:
         path: ${{ env.CONDA }}/envs
         key: conda-${{ runner.os }}-python${{ matrix.python-version }}-${{ env.DATE }}-${{ hashFiles('**/environment.yml') }}-${{ env.CACHE_NUMBER }}
-      
+
     - name: Install Conda Dependencies
       if: steps.cached-conda-dependencies.outputs.cache-hit != 'true'
       run: |
@@ -69,7 +68,7 @@ jobs:
     - name: Setup Poetry in Conda Environment
       uses: snok/install-poetry@v1
       with:
-        version: latest 
+        version: latest
         virtualenvs-create: true
         virtualenvs-in-project: true
         installer-parallel: true

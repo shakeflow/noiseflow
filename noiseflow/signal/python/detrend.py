@@ -1,15 +1,14 @@
 import numpy as np
-
-from scipy.signal import detrend as scipy_detrend
 from scipy.interpolate import LSQUnivariateSpline
+from scipy.signal import detrend as scipy_detrend
 
 
-def detrend_py(data, type='linear', flag=False, flag_gap=None):
+def detrend_py(data, type="linear", flag=False, flag_gap=None):
     if data.ndim == 1:
         data = data.reshape(1, -1)
 
     for i in range(0, data.shape[0]):
-        detrend(data[i,:], type)
+        detrend(data[i, :], type)
 
 
 def spline(data, order=2, dspline=1000):
@@ -17,7 +16,7 @@ def spline(data, order=2, dspline=1000):
         data = np.require(data, dtype=np.float64)
 
     x = np.arange(len(data))
-    splknots = np.arange(dspline/2.0, len(data) - dspline/2.0 + 2, dspline)
+    splknots = np.arange(dspline / 2.0, len(data) - dspline / 2.0 + 2, dspline)
     spl = LSQUnivariateSpline(x=x, y=data, t=splknots, k=order)
     fit = spl(x)
     data -= fit
@@ -25,7 +24,7 @@ def spline(data, order=2, dspline=1000):
     return data
 
 
-def detrend(data, type='linear', order=2, dspline=1000):
+def detrend(data, type="linear", order=2, dspline=1000):
     """
     Detrend data.
     :param data: The data to detrend.
@@ -55,17 +54,11 @@ def detrend(data, type='linear', order=2, dspline=1000):
 
     """
 
-    if type == 'demean':
+    if type == "demean":
         data -= np.mean(data)
-    elif type == 'linear':
-        scipy_detrend(data, type='linear', overwrite_data=True)
-    elif type == 'spline':
+    elif type == "linear":
+        scipy_detrend(data, type="linear", overwrite_data=True)
+    elif type == "spline":
         spline(data, order=order, dspline=dspline)
     else:
         raise ValueError("type must be 'demean', 'linear', or 'spline'")
-
-
-
-
-
-

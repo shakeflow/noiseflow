@@ -1,23 +1,23 @@
 # The stack functions are from https://github.com/xtyangpsp/StackMaster
 
 import time
-import numpy as np
-import matplotlib.pyplot as plt
-
-from tqdm import tqdm 
-from joblib import Parallel, delayed
 from itertools import compress
+
+import matplotlib.pyplot as plt
+import numpy as np
+from joblib import Parallel, delayed
+from scipy.fftpack import fft, ifft, next_fast_len
 from scipy.signal import hilbert
-from scipy.fftpack import fft,ifft,next_fast_len
+from tqdm import tqdm
+
 from noiseflow.cc.python.utils import slice_window, split
 
 try:
     from stockwell import st
-    from tslearn.utils import to_time_series_dataset
     from tslearn.clustering import TimeSeriesKMeans
-except:
+    from tslearn.utils import to_time_series_dataset
+except Exception:
     pass
-
 
 
 def rms(d):
@@ -25,14 +25,14 @@ def rms(d):
 
 
 def power2pad(data):
-	"""Zero pad data such that its length is a power of 2"""
-	N=int(2**np.ceil(np.log2(len(data))))
-	pad_end=np.zeros(int(N-len(data)))
+    """Zero pad data such that its length is a power of 2"""
+    N = int(2 ** np.ceil(np.log2(len(data))))
+    pad_end = np.zeros(int(N - len(data)))
 
-	return np.concatenate((data,pad_end))
+    return np.concatenate((data, pad_end))
 
 
-def stack(d,method,par=None):
+def stack(d, method, par=None):
     """
     this is a wrapper for calling individual stacking functions.
     d: data. 2-d array
@@ -44,50 +44,93 @@ def stack(d,method,par=None):
     RETURNS:
     ds: stacked data, which may be a list depending on the method.
     """
-    method_list=["linear","pws","robust","acf","nroot","selective",
-            "cluster","tfpws"]
+    method_list = [
+        "linear",
+        "pws",
+        "robust",
+        "acf",
+        "nroot",
+        "selective",
+        "cluster",
+        "tfpws",
+    ]
     if method not in method_list:
-        raise ValueError("$s not recoganized. use one of $s"%(method,str(method_list)))
-    
-    par0={"axis":0,"p":2,"g":1,"cc_min":0.0,"epsilon":1E-5,"maxstep":10,
-            "win":None,"stat":False,"h":0.75,'plot':False,'normalize':True,'ref':None}  #stat: if true, will return statistics.
-    
-    if par is None:
-        par=par0
-    else:
-        par={**par0,**par} #use par values if specified. otherwise, use defaults.
+        raise ValueError(
+            "%s not recoganized. use one of %s" % (method, str(method_list))
+        )
 
-    if method.lower() == 'linear':
-        ds = np.mean(d,axis=par["axis"])
-    elif method.lower() == 'pws':
-        ds = pws(d,p=par['p'])
-    elif method.lower() == 'tfpws':
-        ds = tfpws(d,p=par['p'])
+    par0 = {
+        "axis": 0,
+        "p": 2,
+        "g": 1,
+        "cc_min": 0.0,
+        "epsilon": 1e-5,
+        "maxstep": 10,
+        "win": None,
+        "stat": False,
+        "h": 0.75,
+        "plot": False,
+        "normalize": True,
+        "ref": None,
+    }  # stat: if true, will return statistics.
+
+    if par is None:
+        par = par0
+    else:
+        par = {**par0, **par}  # use par values if specified. otherwise, use defaults.
+
+    if method.lower() == "linear":
+        ds = np.mean(d, axis=par["axis"])
+    elif method.lower() == "pws":
+        ds = pws(d, p=par["p"])
+    elif method.lower() == "tfpws":
+        ds = tfpws(d, p=par["p"])
     # elif method.lower() == 'tfpws-dost':
     #     ds = tfpws_dost(d,p=par['p'])
-    elif method.lower() == 'robust':
-        ds = robust(d,epsilon=par['epsilon'],maxstep=par['maxstep'],win=par["win"],
-                stat=par['stat'],ref=par['ref'])
-    elif method.lower() == 'acf':
-        ds = adaptive_filter(d,g=par['g'])
-    elif method.lower() == 'nroot':
-        ds = nroot(d,p=par['p'])
-    elif method.lower() == 'selective':
-        ds = selective(d,cc_min=par['cc_min'],epsilon=par['epsilon'],maxstep=par['maxstep'],
-                stat=par['stat'],ref=par['ref'],win=par["win"])
-    elif method.lower() == 'cluster':
-        ds = clusterstack(d,h=par['h'],axis=par['axis'],win=par["win"],
-        normalize=par['normalize'],plot=par['plot'])
+    elif method.lower() == "robust":
+        ds = robust(
+            d,
+            epsilon=par["epsilon"],
+            maxstep=par["maxstep"],
+            win=par["win"],
+            stat=par["stat"],
+            ref=par["ref"],
+        )
+    elif method.lower() == "acf":
+        ds = adaptive_filter(d, g=par["g"])
+    elif method.lower() == "nroot":
+        ds = nroot(d, p=par["p"])
+    elif method.lower() == "selective":
+        ds = selective(
+            d,
+            cc_min=par["cc_min"],
+            epsilon=par["epsilon"],
+            maxstep=par["maxstep"],
+            stat=par["stat"],
+            ref=par["ref"],
+            win=par["win"],
+        )
+    elif method.lower() == "cluster":
+        ds = clusterstack(
+            d,
+            h=par["h"],
+            axis=par["axis"],
+            win=par["win"],
+            normalize=par["normalize"],
+            plot=par["plot"],
+        )
     #
     return ds
 
-def seisstack(d,method,par=None):
+
+def seisstack(d, method, par=None):
     """
     This is the same as stack(), to be compatible with old usage.
     """
-    return stack(d,method=method,par=par)
+    return stack(d, method=method, par=par)
 
-def robust(d,epsilon=1E-5,maxstep=10,win=None,stat=False,ref=None):
+
+def robust(d, epsilon=1e-5, maxstep=10, win=None, stat=False, ref=None):
     """
     this is a robust stacking algorithm described in Pavlis and Vernon 2010. Generalized
     by Xiaotao Yang.
@@ -108,45 +151,50 @@ def robust(d,epsilon=1E-5,maxstep=10,win=None,stat=False,ref=None):
     Modified by Xiaotao Yang
     """
     if d.ndim == 1:
-        print('2D matrix is needed')
+        print("2D matrix is needed")
         return d
-    N,M = d.shape
-    res  = 9E9  # residuals
+    N, M = d.shape
+    res = 9e9  # residuals
     w = np.ones(d.shape[0])
-    small_number=1E-15
-    nstep=0
-    if N >=2:
+    small_number = 1e-15
+    nstep = 0
+    if N >= 2:
         if ref is None:
-            newstack = np.median(d,axis=0)
+            newstack = np.median(d, axis=0)
         else:
             newstack = ref
         if win is None:
-            win=[0,-1]
-        while res > epsilon and nstep <=maxstep:
+            win = [0, -1]
+        while res > epsilon and nstep <= maxstep:
             stack = newstack
             for i in range(d.shape[0]):
-                dtemp=d[i,win[0]:win[1]]
-                crap = np.multiply(stack[win[0]:win[1]],dtemp.T)
+                dtemp = d[i, win[0] : win[1]]
+                crap = np.multiply(stack[win[0] : win[1]], dtemp.T)
                 crap_dot = np.sum(crap)
                 di_norm = np.linalg.norm(dtemp)
-                ri_norm = np.linalg.norm(dtemp -  crap_dot*stack[win[0]:win[1]])
+                ri_norm = np.linalg.norm(dtemp - crap_dot * stack[win[0] : win[1]])
                 if ri_norm < small_number:
-                    w[i]=0
+                    w[i] = 0
                 else:
-                    w[i]  = np.abs(crap_dot) /di_norm/ri_norm
-            w =w /np.sum(w)
-            newstack =np.sum( (w*d.T).T,axis=0)#/len(cc_array[:,1])
-            res = np.linalg.norm(newstack-stack,ord=1)/np.linalg.norm(newstack)/len(d[:,1])
-            nstep +=1
+                    w[i] = np.abs(crap_dot) / di_norm / ri_norm
+            w = w / np.sum(w)
+            newstack = np.sum((w * d.T).T, axis=0)  # /len(cc_array[:,1])
+            res = (
+                np.linalg.norm(newstack - stack, ord=1)
+                / np.linalg.norm(newstack)
+                / len(d[:, 1])
+            )
+            nstep += 1
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
     if stat:
         return newstack, w, nstep
     else:
         return newstack
 
-def adaptive_filter(d,g=1):
-    '''
+
+def adaptive_filter(d, g=1):
+    """
     the adaptive covariance filter to enhance coherent signals. Fellows the method of
     Nakata et al., 2015 (Appendix B)
 
@@ -160,46 +208,47 @@ def adaptive_filter(d,g=1):
     RETURNS:
     ----------------------
     newstack: numpy vector contains the stacked cross correlation function
-    '''
+    """
     if d.ndim == 1:
-        print('2D matrix is needed')
+        print("2D matrix is needed")
         return d
-    N,M = d.shape
-    if N>=2:
+    N, M = d.shape
+    if N >= 2:
         Nfft = next_fast_len(M)
 
         # fft the 2D array
-        spec = fft(d,axis=1,n=Nfft)[:,:M]
+        spec = fft(d, axis=1, n=Nfft)[:, :M]
 
         # make cross-spectrm matrix
-        cspec = np.zeros(shape=(N*N,M),dtype=np.complex64)
+        cspec = np.zeros(shape=(N * N, M), dtype=np.complex64)
         for ii in range(N):
             for jj in range(N):
-                kk = ii*N+jj
-                cspec[kk] = spec[ii]*np.conjugate(spec[jj])
+                kk = ii * N + jj
+                cspec[kk] = spec[ii] * np.conjugate(spec[jj])
 
-        S1 = np.zeros(M,dtype=np.complex64)
-        S2 = np.zeros(M,dtype=np.complex64)
+        S1 = np.zeros(M, dtype=np.complex64)
+        S2 = np.zeros(M, dtype=np.complex64)
         # construct the filter P
         for ii in range(N):
-            mm = ii*N+ii
+            mm = ii * N + ii
             S2 += cspec[mm]
             for jj in range(N):
-                kk = ii*N+jj
+                kk = ii * N + jj
                 S1 += cspec[kk]
 
-        p = np.power((S1-S2)/(S2*(N-1)),g)
+        p = np.power((S1 - S2) / (S2 * (N - 1)), g)
 
         # make ifft
-        narr = np.real(ifft(np.multiply(p,spec),Nfft,axis=1)[:,:M])
-        newstack=np.mean(narr,axis=0)
+        narr = np.real(ifft(np.multiply(p, spec), Nfft, axis=1)[:, :M])
+        newstack = np.mean(narr, axis=0)
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
     #
     return newstack
 
-def pws(d,p=2):
-    '''
+
+def pws(d, p=2):
+    """
     Performs phase-weighted stack on array of time series. Modified on the noise function by Tim Climents.
     Follows methods of Schimmel and Paulssen, 1997.
     If s(t) is time series data (seismogram, or cross-correlation),
@@ -218,27 +267,28 @@ def pws(d,p=2):
     RETURNS:
     ---------------------
     newstack: Phase weighted stack of time series data (numpy.ndarray)
-    '''
+    """
 
     if d.ndim == 1:
-        print('2D matrix is needed')
+        print("2D matrix is needed")
         return d
-    N,M = d.shape
-    if N >=2:
-        analytic = hilbert(d,axis=1, N=next_fast_len(M))[:,:M]
+    N, M = d.shape
+    if N >= 2:
+        analytic = hilbert(d, axis=1, N=next_fast_len(M))[:, :M]
         phase = np.angle(analytic)
-        phase_stack = np.mean(np.exp(1j*phase),axis=0)
-        phase_stack = np.abs(phase_stack)**(p)
+        phase_stack = np.mean(np.exp(1j * phase), axis=0)
+        phase_stack = np.abs(phase_stack) ** (p)
 
-        weighted = np.multiply(d,phase_stack)
+        weighted = np.multiply(d, phase_stack)
 
-        newstack=np.mean(weighted,axis=0)
+        newstack = np.mean(weighted, axis=0)
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
     return newstack
 
-def nroot(d,p=2):
-    '''
+
+def nroot(d, p=2):
+    """
     this is nth-root stacking algorithm translated based on the matlab function
     from https://github.com/xtyangpsp/SeisStack (by Xiaotao Yang; follows the
     reference of Millet, F et al., 2019 JGR)
@@ -253,30 +303,30 @@ def nroot(d,p=2):
     newstack: np.ndarray, final stacked waveforms
 
     Written by Chengxin Jiang @ANU (May2020)
-    '''
+    """
     if d.ndim == 1:
-        print('2D matrix is needed for nroot_stack')
+        print("2D matrix is needed for nroot_stack")
         return d
-    N,M = d.shape
-    if N >=2:
-        dout = np.zeros(M,dtype=np.float32)
+    N, M = d.shape
+    if N >= 2:
+        dout = np.zeros(M, dtype=np.float32)
 
         # construct y
         for ii in range(N):
-            dat = d[ii,:]
-            dout += np.sign(dat)*np.abs(dat)**(1/p)
+            dat = d[ii, :]
+            dout += np.sign(dat) * np.abs(dat) ** (1 / p)
         dout /= N
 
         # the final stacked waveform
-        newstack = dout*np.abs(dout)**(p-1)
+        newstack = dout * np.abs(dout) ** (p - 1)
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
 
     return newstack
 
 
-def selective(d,cc_min,epsilon=1E-5,maxstep=10,win=None,stat=False,ref=None):
-    '''
+def selective(d, cc_min, epsilon=1e-5, maxstep=10, win=None, stat=False, ref=None):
+    """
     this is a selective stacking algorithm developed by Jared Bryan/Kurama Okubo.
 
     PARAMETERS:
@@ -296,48 +346,54 @@ def selective(d,cc_min,epsilon=1E-5,maxstep=10,win=None,stat=False,ref=None):
 
     Originally ritten by Marine Denolle
     Modified by Chengxin Jiang @Harvard (Oct2020)
-    '''
+    """
     if d.ndim == 1:
-        print('2D matrix is needed for selective stacking')
+        print("2D matrix is needed for selective stacking")
         return d
-    N,M = d.shape
-    if N>=2:
-        res  = 9E9  # residuals
-        cof  = np.zeros(N,dtype=np.float32)
+    N, M = d.shape
+    if N >= 2:
+        res = 9e9  # residuals
+        cof = np.zeros(N, dtype=np.float32)
         if ref is None:
-            newstack = np.mean(d,axis=0)
+            newstack = np.mean(d, axis=0)
         else:
             newstack = ref
 
         nstep = 0
         if win is None:
-            win=[0,-1]
+            win = [0, -1]
         # start iteration
-        while res>epsilon and nstep<=maxstep:
+        while res > epsilon and nstep <= maxstep:
             for ii in range(N):
-                cof[ii] = np.corrcoef(newstack[win[0]:win[1]], d[ii,win[0]:win[1]])[0, 1]
+                cof[ii] = np.corrcoef(
+                    newstack[win[0] : win[1]], d[ii, win[0] : win[1]]
+                )[0, 1]
 
             # find good waveforms
-            indx = np.where(cof>=cc_min)[0]
-            nstep +=1
+            indx = np.where(cof >= cc_min)[0]
+            nstep += 1
             if not len(indx):
-                newstack=np.ndarray((d.shape[1],))
+                newstack = np.ndarray((d.shape[1],))
                 newstack.fill(np.nan)
-                print('cannot find good waveforms inside selective stacking')
+                print("cannot find good waveforms inside selective stacking")
                 break
             else:
                 oldstack = newstack
-                newstack = np.mean(d[indx],axis=0)
-                res = np.linalg.norm(newstack-oldstack)/(np.linalg.norm(newstack)*M)
+                newstack = np.mean(d[indx], axis=0)
+                res = np.linalg.norm(newstack - oldstack) / (
+                    np.linalg.norm(newstack) * M
+                )
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
     if stat:
         return newstack, nstep
     else:
         return newstack
+
+
 #
-def clusterstack(d,h=0.75,win=None,axis=0,normalize=True,plot=False):
-    '''
+def clusterstack(d, h=0.75, win=None, axis=0, normalize=True, plot=False):
+    """
     Performs stack after clustering. The data will be clustered into two groups.
     If the two centers of the clusters are similar (defined by corrcoef >= "t"), the original
     traces associated with both clusters will be used to produce the final linear stack, weighted by
@@ -358,66 +414,75 @@ def clusterstack(d,h=0.75,win=None,axis=0,normalize=True,plot=False):
     RETURNS:
     ---------------------
     newstack: final stack.
-    '''
-    ncluster=2 #DO NOT change this value.
-    min_trace=2 #minimum of two traces.
-    metric="euclidean" #matric to compute the distance in kmeans clustering.
+    """
+    ncluster = 2  # DO NOT change this value.
+    min_trace = 2  # minimum of two traces.
+    metric = "euclidean"  # matric to compute the distance in kmeans clustering.
     if d.ndim == 1:
-        print('2D matrix is needed')
+        print("2D matrix is needed")
         return d
-    N,M = d.shape
+    N, M = d.shape
     if N >= min_trace:
-        dataN=d.copy()
+        dataN = d.copy()
         if normalize:
             for i in range(N):
-                dataN[i]=d[i]/np.max(np.abs(d[i]),axis=0)
+                dataN[i] = d[i] / np.max(np.abs(d[i]), axis=0)
 
         ts = to_time_series_dataset(dataN)
 
-        km = TimeSeriesKMeans(n_clusters=ncluster, n_jobs=1,metric=metric, verbose=False,
-                              max_iter_barycenter=100, random_state=0)
+        km = TimeSeriesKMeans(
+            n_clusters=ncluster,
+            n_jobs=1,
+            metric=metric,
+            verbose=False,
+            max_iter_barycenter=100,
+            random_state=0,
+        )
         y_pred = km.fit_predict(ts)
-        snr_all=[]
-        centers_all=[]
-        cidx=[]
+        snr_all = []
+        centers_all = []
+        cidx = []
         if win is None:
-            win=[0,-1]
+            win = [0, -1]
         for yi in range(ncluster):
-            cidx.append(np.where((y_pred==yi))[0])
-            center=km.cluster_centers_[yi].ravel()#np.squeeze(np.mean(ts[y_pred == yi].T,axis=2))
+            cidx.append(np.where((y_pred == yi))[0])
+            center = km.cluster_centers_[
+                yi
+            ].ravel()  # np.squeeze(np.mean(ts[y_pred == yi].T,axis=2))
             centers_all.append(center)
-            snr=np.max(np.abs(center[win[0]:win[1]]))/rms(np.abs(center))
+            snr = np.max(np.abs(center[win[0] : win[1]])) / rms(np.abs(center))
             snr_all.append(snr)
 
         #
         if plot:
-            plt.figure(figsize=(12,4))
+            plt.figure(figsize=(12, 4))
             for yi in range(ncluster):
-                plt.subplot(1,ncluster,yi+1)
-                plt.plot(np.squeeze(ts[cidx[yi]].T),'k-',alpha=0.3)
-                plt.plot(centers_all[yi],'r-')
-                plt.title('Cluster %d: %d'%(yi+1,len(cidx[yi])))
+                plt.subplot(1, ncluster, yi + 1)
+                plt.plot(np.squeeze(ts[cidx[yi]].T), "k-", alpha=0.3)
+                plt.plot(centers_all[yi], "r-")
+                plt.title("Cluster %d: %d" % (yi + 1, len(cidx[yi])))
             plt.show()
-        cc=np.corrcoef(centers_all[0],centers_all[1])[0,1]
-        if cc>= h: #use all data
-            snr_normalize=snr_all/np.sum(snr_all)
-            newstack=np.zeros((M))
+        cc = np.corrcoef(centers_all[0], centers_all[1])[0, 1]
+        if cc >= h:  # use all data
+            snr_normalize = snr_all / np.sum(snr_all)
+            newstack = np.zeros((M))
             for yi in range(ncluster):
-                newstack += snr_normalize[yi]*np.mean(d[cidx[yi]],axis=0)
+                newstack += snr_normalize[yi] * np.mean(d[cidx[yi]], axis=0)
         else:
-            goodidx=np.argmax(snr_all)
-            newstack=np.mean(d[cidx[goodidx]],axis=0)
-        del dataN,ts,y_pred
+            goodidx = np.argmax(snr_all)
+            newstack = np.mean(d[cidx[goodidx]], axis=0)
+        del dataN, ts, y_pred
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
     #
     return newstack
 
-def tfpws(d,p=2,axis=0):
-    '''
+
+def tfpws(d, p=2, axis=0):
+    """
     Performs time-frequency domain phase-weighted stack on array of time series.
 
-    $C_{ps} = |(\sum{S*e^{i2\pi}/|S|})/M|^p$, where $C_{ps}$ is the phase weight. Then
+    $C_{ps} = |(\\sum{S*e^{i2\\pi}/|S|})/M|^p$, where $C_{ps}$ is the phase weight. Then
     $S_{pws} = C_{ps}*S_{ls}$, where $S_{ls}$ is the S transform of the linea stack
     of the whole data.
 
@@ -436,33 +501,38 @@ def tfpws(d,p=2,axis=0):
     RETURNS:
     ---------------------
     newstack: Phase weighted stack of time series data (numpy.ndarray)
-    '''
+    """
     if d.ndim == 1:
-        print('2D matrix is needed')
+        print("2D matrix is needed")
         return d
-    N,M = d.shape
-    if N >=2:
-        lstack=np.mean(d,axis=axis)
-        #get the ST of the linear stack first
-        stock_ls=st.st(power2pad(lstack))
+    N, M = d.shape
+    if N >= 2:
+        lstack = np.mean(d, axis=axis)
+        # get the ST of the linear stack first
+        stock_ls = st.st(power2pad(lstack))
 
-        #run a ST to get the dimension of ST result
-        stock_temp=st.st(power2pad(d[0]))
-        phase_stack=np.zeros((stock_temp.shape[0],stock_temp.shape[1]),dtype='complex128')
+        # run a ST to get the dimension of ST result
+        stock_temp = st.st(power2pad(d[0]))
+        phase_stack = np.zeros(
+            (stock_temp.shape[0], stock_temp.shape[1]), dtype="complex128"
+        )
         for i in range(N):
-            if i>0: #zero index has been computed.
-                stock_temp=st.st(power2pad(d[i]))
-            phase_stack += np.multiply(stock_temp,np.angle(stock_temp))/np.abs(stock_temp)
+            if i > 0:  # zero index has been computed.
+                stock_temp = st.st(power2pad(d[i]))
+            phase_stack += np.multiply(stock_temp, np.angle(stock_temp)) / np.abs(
+                stock_temp
+            )
         #
-        phase_stack = np.abs(phase_stack/N)**p
+        phase_stack = np.abs(phase_stack / N) ** p
 
-        pwstock=np.multiply(phase_stack,stock_ls)
-        recdostIn=np.real(st.ist(pwstock))
-        newstack=recdostIn[:M] # trim padding
+        pwstock = np.multiply(phase_stack, stock_ls)
+        recdostIn = np.real(st.ist(pwstock))
+        newstack = recdostIn[:M]  # trim padding
     else:
-        newstack=d[0].copy()
+        newstack = d[0].copy()
     #
     return newstack
+
 
 # def tfpws_dost(d,p=2,axis=0):
 #     '''
@@ -515,7 +585,7 @@ def tfpws(d,p=2,axis=0):
 #         	if i>0: # zero index has been computed
 #         	    stock_dost=DOST(d[i])
 #         	    stock_temp=stock_dost.dost(stock_dost.data)
-                    
+
 #             phase_stack+=np.multiply(stock_temp,np.angle(stock_temp))/np.abs(stock_temp)
 
 #         phase_stack = np.abs(phase_stack/N)**p
@@ -528,17 +598,18 @@ def tfpws(d,p=2,axis=0):
 #     #
 #     return newstack
 
+
 class DOST:
     def __init__(self, data):
         # make sure data length is a power of 2
-        if np.ceil(np.log2(len(data)))==np.floor(np.log2(len(data))):
+        if np.ceil(np.log2(len(data))) == np.floor(np.log2(len(data))):
             # length of data already a power of 2
-            self.data=data
+            self.data = data
         else:
             # pad data to nearest power of 2
-            self.data=self.pad(data)
+            self.data = self.pad(data)
 
-    def pad(self,data):
+    def pad(self, data):
         """Zero pad data such that its length is a power of 2
 
         PARAMETERS:
@@ -549,9 +620,9 @@ class DOST:
         ---------------------
         data: zero-padded array of time series data (numpy.ndarray)
         """
-        N=int(2**np.ceil(np.log2(len(data))))
-        pad_end=np.zeros(int(N-len(data)))
-        data=np.concatenate((data,pad_end))
+        N = int(2 ** np.ceil(np.log2(len(data))))
+        pad_end = np.zeros(int(N - len(data)))
+        data = np.concatenate((data, pad_end))
 
         return data
 
@@ -566,10 +637,10 @@ class DOST:
         ---------------------
         fftIn: array of frequency-domain data (numpy.ndarray)
         """
-        fftIn=(1/np.sqrt(len(d))) * np.fft.fftshift(np.fft.fft(np.fft.ifftshift(d)))
+        fftIn = (1 / np.sqrt(len(d))) * np.fft.fftshift(np.fft.fft(np.fft.ifftshift(d)))
         return fftIn
 
-    def ifourier(self,d):
+    def ifourier(self, d):
         """Normalized and centered ifft
 
         PARAMETERS:
@@ -580,10 +651,10 @@ class DOST:
         ---------------------
         ifftIn: array of time series data (numpy.ndarray)
         """
-        ifftIn=np.sqrt(len(d)) * np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(d)))
+        ifftIn = np.sqrt(len(d)) * np.fft.fftshift(np.fft.ifft(np.fft.ifftshift(d)))
         return ifftIn
 
-    def dostbw(self,D):
+    def dostbw(self, D):
         """Calculate size of the DOST bandwidths
 
         PARAMETERS:
@@ -594,14 +665,14 @@ class DOST:
         ---------------------
         bw: list of DOST bandwidths
         """
-        bw=[0]
-        bw.extend(np.arange(np.log2(D)-2, -1e-9, -1))
+        bw = [0]
+        bw.extend(np.arange(np.log2(D) - 2, -1e-9, -1))
         bw.extend([0])
-        bw.extend(np.arange(0, np.log2(D)-2+1e-9))
-        bw=2**np.array(bw)
+        bw.extend(np.arange(0, np.log2(D) - 2 + 1e-9))
+        bw = 2 ** np.array(bw)
         return bw
 
-    def dost(self,d):
+    def dost(self, d):
         """Discrete Orthonormal Stockwell Transform
 
         PARAMETERS:
@@ -612,21 +683,21 @@ class DOST:
         ---------------------
         d_dost: array of DOST coefficients (numpy.ndarray)
         """
-        d_dost=self.fourier(d)
-        D=len(d)
-        bw=self.dostbw(D)
-        k=0
+        d_dost = self.fourier(d)
+        D = len(d)
+        bw = self.dostbw(D)
+        k = 0
         # heuristically, this is a short-time fourier transform with a frequency-dependent bandwidth
         for i in bw:
-            i=int(i)
-            if i==1:
-                k=k+i
+            i = int(i)
+            if i == 1:
+                k = k + i
             else:
-                d_dost[k:k+i] = self.ifourier(d_dost[k:k+i])
-                k=k+i
+                d_dost[k : k + i] = self.ifourier(d_dost[k : k + i])
+                k = k + i
         return d_dost
 
-    def idost(self,d):
+    def idost(self, d):
         """Inverse Discrete Orthonormal Stockwell Transform
 
         PARAMETERS:
@@ -637,23 +708,36 @@ class DOST:
         ---------------------
         d_idost: array of time-series data (numpy.ndarray)
         """
-        d_idost=d
-        D=len(d)
-        bw=self.dostbw(D)
-        k=0
+        d_idost = d
+        D = len(d)
+        bw = self.dostbw(D)
+        k = 0
         for i in bw:
-            i=int(i)
-            if i==1:
-                k=k+i
+            i = int(i)
+            if i == 1:
+                k = k + i
             else:
-                d_idost[k:k+i] = self.fourier(d_idost[k:k+i])
-                k=k+i
+                d_idost[k : k + i] = self.fourier(d_idost[k : k + i])
+                k = k + i
         d_idost = self.ifourier(d_idost)
         return d_idost
 
 
 class StackClass_python(object):
-    def __init__(self, corr_data, stack_method, par, stack_all, stack_len, stack_step, pick, median_high, median_low, flag, jobs):
+    def __init__(
+        self,
+        corr_data,
+        stack_method,
+        par,
+        stack_all,
+        stack_len,
+        stack_step,
+        pick,
+        median_high,
+        median_low,
+        flag,
+        jobs,
+    ):
         self.corr_data = corr_data
         self.stack_method = stack_method
         self.par = par
@@ -681,17 +765,20 @@ class StackClass_python(object):
         # initialize output_data
         self.ngood_all = np.empty((self.pair_num, self.stack_win_num))
         if self.corr_data.dtype == np.dtype(np.float32):
-            self.output_data = np.empty((self.pair_num, self.stack_win_num, self.npts), dtype=np.float32)
+            self.output_data = np.empty(
+                (self.pair_num, self.stack_win_num, self.npts), dtype=np.float32
+            )
             self.time_dtype = np.float32
             self.freq_dtype = np.complex64
         elif self.corr_data.dtype == np.dtype(np.float64):
-            self.output_data = np.empty((self.pair_num, self.stack_win_num, self.npts), dtype=np.float64)
+            self.output_data = np.empty(
+                (self.pair_num, self.stack_win_num, self.npts), dtype=np.float64
+            )
             self.time_dtype = np.float64
             self.freq_dtype = np.complex128
         else:
             print("error: please input the correct data type.")
             exit(1)
-
 
     def pick(self, pair_id):
         nindex = None
@@ -699,25 +786,28 @@ class StackClass_python(object):
             # SOME WARNING HERE!!!
             ampmax = np.amax(self.corr_data[pair_id, :, :], axis=1)
             median_ampmax = np.median(ampmax)
-            index = np.where((ampmax > self.median_low * median_ampmax) & (ampmax < self.median_high * median_ampmax))[0]
-        
+            index = np.where(
+                (ampmax > self.median_low * median_ampmax)
+                & (ampmax < self.median_high * median_ampmax)
+            )[0]
+
             nindex = np.array(index, dtype=int)
         else:
             nindex = np.arange(0, self.corr_win_num, dtype=int)
 
         return nindex
 
-
     def check_ngood(self, nindex):
         ngood = np.empty(self.stack_win_num)
         if self.pick_m:
             for i in range(0, self.stack_win_num):
-                ngood[i] = np.sum((nindex >= self.win_info[i, 0]) & (nindex < self.win_info[i, 1]))
+                ngood[i] = np.sum(
+                    (nindex >= self.win_info[i, 0]) & (nindex < self.win_info[i, 1])
+                )
         else:
             ngood = self.stack_len * np.ones(self.stack_win_num)
 
         return ngood
-
 
     def stack(self, pair_id, nindex):
         stack_data = np.empty((self.stack_win_num, self.npts), dtype=self.time_dtype)
@@ -730,10 +820,9 @@ class StackClass_python(object):
                 stack_data[i, :] = np.zeros(self.npts)
             else:
                 pick_corr_data = self.corr_data[pair_id, pick_index, :]
-                stack_data[i, :] = stack(pick_corr_data, self.stack_method, self.par)    
+                stack_data[i, :] = stack(pick_corr_data, self.stack_method, self.par)
 
         return stack_data
-
 
     def process_chunk(self, chunk_start, chunk_end):
         ngood_results = []
@@ -752,23 +841,25 @@ class StackClass_python(object):
             ngood = self.check_ngood(nindex)
 
             # corr
-            stack_data = self.stack(i, nindex) # "linear", "pws", "robust"
+            stack_data = self.stack(i, nindex)  # "linear", "pws", "robust"
 
             ngood_results.append(ngood)
             stack_data_results.append(stack_data)
 
         return ngood_results, stack_data_results
 
-
     def run(self):
         if self.flag:
             start_time = time.time()
             print(f"Start stack with {self.jobs} jobs in python...")
-        
+
         # parallel processing
         if self.jobs > 1:
             chunk_list = split(num=self.pair_num, n_jobs=self.jobs)
-            results = Parallel(n_jobs=self.jobs, backend="loky")(delayed(self.process_chunk)(chunk_start, chunk_end) for chunk_start, chunk_end in chunk_list)
+            results = Parallel(n_jobs=self.jobs, backend="loky")(
+                delayed(self.process_chunk)(chunk_start, chunk_end)
+                for chunk_start, chunk_end in chunk_list
+            )
 
             ngood_all_results = []
             output_data_results = []
@@ -781,11 +872,14 @@ class StackClass_python(object):
             self.ngood_all = np.array(ngood_all_results)
             self.output_data = np.array(output_data_results, dtype=self.time_dtype)
         else:
-            ngood_all_results, output_data_results = self.process_chunk(0, self.pair_num)
-            self.ngood_all, self.output_data = np.array(ngood_all_results), np.array(output_data_results, dtype=self.time_dtype)
+            ngood_all_results, output_data_results = self.process_chunk(
+                0, self.pair_num
+            )
+            self.ngood_all, self.output_data = np.array(ngood_all_results), np.array(
+                output_data_results, dtype=self.time_dtype
+            )
 
         if self.flag:
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"End stack with total time {elapsed_time}s")
-
