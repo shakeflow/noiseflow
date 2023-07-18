@@ -1,8 +1,10 @@
 name: Sphinx
+
 on:
   push:
     branches:
       - main
+
 jobs:
   sphinx:
     runs-on: ubuntu-latest
@@ -11,16 +13,16 @@ jobs:
       - name: Set up python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.11
+          python-version: '3.10'
       - name: run doc
         run: |
           pip install poetry-core@https://github.com/python-poetry/poetry-core/archive/refs/tags/1.6.1.zip
           pip install numpy obspy scipy matplotlib
           pip install . --no-build-isolation
-          pip install sphinx pydata-sphinx-theme sphinx-autoapi jupyter-sphinx sphinx-copybutton pytest
+          pip install sphinx pydata-sphinx-theme sphinx-autoapi jupyter-sphinx sphinx-copybutton
           cd docs
           make html
-          echo "yinfu.info" > _build/html/CNAME
+          echo "noiseflow.shakeflow.org" > _build/html/CNAME
           cd ..
       - name: push to github page
         if: ${{ !env.ACT }}

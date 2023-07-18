@@ -1,4 +1,5 @@
 name: Publish to PyPI
+
 on:
   release:
     types: [published]
@@ -80,7 +81,7 @@ jobs:
 
     - name: Install Poetry Dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction
+      run: poetry install --no-interaction --no-root
 
     - name: Install Source-Code from Github
       run: |
